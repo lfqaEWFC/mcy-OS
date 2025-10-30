@@ -59,7 +59,7 @@ SECTION MBR vstart=0x7c00
 ; -----------------------------------------------------------
     mov eax, LOADER_START_SECTOR    ; 起始扇区 LBA 地址
     mov bx,  LOADER_BASE_ADDR       ; 写入的内存地址
-    mov cx,  1                      ; 待读入的扇区数
+    mov cx,  4                      ; 待读入的扇区数
     call rd_disk_m_16               ; 调用读盘函数
 
 ; -----------------------------------------------------------
