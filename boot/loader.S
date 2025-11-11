@@ -51,8 +51,8 @@ gdt_ptr:
     dw GDT_LIMIT                                  ; GDTR.limit（2 字节）
     dd GDT_BASE                                   ; GDTR.base  （4 字节）
 
-ards_buf times 241 db 0                                 ; ARDS 缓冲区（对齐用，合计 256 字节区块）
-ards_nr dw 0		                                    ; 记录 ARDS（内存描述条目）数量
+ards_buf times 241 db 0                           ; ARDS 缓冲区（对齐用，合计 256 字节区块）
+ards_nr dw 0		                              ; 记录 ARDS（内存描述条目）数量
 
 
 ; ================================================================
