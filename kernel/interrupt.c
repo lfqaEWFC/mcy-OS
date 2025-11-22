@@ -4,6 +4,11 @@
 #include "io.h"
 #include "print.h"
 
+#define EFLAGS_IF   0x00000200       // eflags寄存器中的if位为1
+#define GET_EFLAGS(EFLAG_VAR) asm volatile("pushfl; popl %0" : "=g" (EFLAG_VAR))
+//pop到了EFLAG_VAR所在内存中，该约束自然用表示内存的字母，但是内联汇编中没有专门表示约束内存的字母，所以只能用g
+//g 代表可以是任意寄存器，内存或立即数
+
 #define PIC_M_CTRL 0x20	       // 这里用的可编程中断控制器是8259A,主片的控制端口是0x20
 #define PIC_M_DATA 0x21	       // 主片的数据端口是0x21
 #define PIC_S_CTRL 0xa0	       // 从片的控制端口是0xa0
@@ -129,4 +134,44 @@ void idt_init() {
    uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
    asm volatile("lidt %0" : : "m" (idt_operand));
    put_str("idt_init done\n");
+}
+
+/* 获取当前中断状态 */
+enum intr_status intr_get_status() {
+   uint32_t eflags = 0; 
+   GET_EFLAGS(eflags);
+   return (EFLAGS_IF & eflags) ? INTR_ON : INTR_OFF;
+}
+
+/* 开中断并返回开中断前的状态*/
+enum intr_status intr_enable() {
+   enum intr_status old_status;
+   if (INTR_ON == intr_get_status()) {
+      old_status = INTR_ON;
+      return old_status;
+   } else {
+      old_status = INTR_OFF;
+      asm volatile("sti");	 // 开中断,sti指令将IF位置1
+      return old_status;
+   }
+}
+
+/* 关中断,并且返回关中断前的状态 */
+enum intr_status intr_disable() {     
+   enum intr_status old_status;
+   if (INTR_ON == intr_get_status()) {
+      old_status = INTR_ON;
+      asm volatile("cli" : : : "memory"); // 关中断,cli指令将IF位置0
+                                          //cli指令不会直接影响内存。然而，从一个更大的上下文来看，禁用中断可能会影响系统状态，
+                                          //这个状态可能会被存储在内存中。所以改变位填 "memory" 是为了安全起见，确保编译器在生成代码时考虑到这一点。
+      return old_status;
+   } else {
+      old_status = INTR_OFF;
+      return old_status;
+   }
+}
+
+/* 将中断状态设置为status */
+enum intr_status intr_set_status(enum intr_status status) {
+   return status & INTR_ON ? intr_enable() : intr_disable();   //enable与disable函数会返回旧中断状态
 }

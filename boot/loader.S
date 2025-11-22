@@ -5,7 +5,6 @@ section loader vstart=LOADER_BASE_ADDR
 ; ================================================================
 ;                       loader 启动段
 ; ================================================================
-LOADER_STACK_TOP    equ LOADER_BASE_ADDR
 jmp loader_start                                  ; 跳过 GDT 描述符区，直接跳转到 loader 入口执行
 
 
