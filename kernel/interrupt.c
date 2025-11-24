@@ -161,9 +161,10 @@ enum intr_status intr_disable() {
    enum intr_status old_status;
    if (INTR_ON == intr_get_status()) {
       old_status = INTR_ON;
-      asm volatile("cli" : : : "memory"); // 关中断,cli指令将IF位置0
-                                          //cli指令不会直接影响内存。然而，从一个更大的上下文来看，禁用中断可能会影响系统状态，
-                                          //这个状态可能会被存储在内存中。所以改变位填 "memory" 是为了安全起见，确保编译器在生成代码时考虑到这一点。
+      asm volatile("cli" : : : "memory"); 
+//    关中断,cli指令将IF位置0
+//    cli指令不会直接影响内存。然而，从一个更大的上下文来看，禁用中断可能会影响系统状态，
+//    这个状态可能会被存储在内存中。所以改变位填 "memory" 是为了安全起见，确保编译器在生成代码时考虑到这一点。
       return old_status;
    } else {
       old_status = INTR_OFF;

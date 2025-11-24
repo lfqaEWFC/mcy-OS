@@ -16,23 +16,18 @@ LDFLAGS= -Ttext $(ENTRY_POINT) -e main -Map $(BUILD_DIR)/kernel.map -m elf_i386
 #-Map,生成map文件，就是通过编译器编译之后，生成的程序、数据及IO空间信息的一种映射文件
 #里面包含函数大小，入口地址等一些重要信息
 
-OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o \
+OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o $(BUILD_DIR)/kernel.o \
-	$(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o
+	$(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
+	$(BUILD_DIR)/bitmap.o \
 #顺序最好是调用在前，实现在后
-
-######################编译两个启动文件的代码#####################################
-boot:$(BUILD_DIR)/mbr.o $(BUILD_DIR)/loader.o
-$(BUILD_DIR)/mbr.o:boot/mbr.S
-	$(AS) -I boot/include/ -o build/mbr.o boot/mbr.S
-	
-$(BUILD_DIR)/loader.o:boot/loader.S
-	$(AS) -I boot/include/ -o build/loader.o boot/loader.S
 	
 ######################编译C内核代码###################################################
+# $@表示规则中目标文件名的集合这里就是$(BUILD_DIR)/main.o  
+# $<表示规则中依赖文件的第一个，这里就是kernle/main.c 
+
 $(BUILD_DIR)/main.o:kernel/main.c
-	$(CC) $(CFLAGS) -o $@ $<	
-# $@表示规则中目标文件名的集合这里就是$(BUILD_DIR)/main.o  $<表示规则中依赖文件的第一个，这里就是kernle/main.c 
+	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/init.o:kernel/init.c
 	$(CC) $(CFLAGS) -o $@ $<
@@ -49,7 +44,14 @@ $(BUILD_DIR)/debug.o:lib/kernel/debug.c
 $(BUILD_DIR)/string.o:lib/kernel/string.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(BUILD_DIR)/memory.o:lib/kernel/memory.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/bitmap.o:lib/kernel/bitmap.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 ###################编译汇编内核代码#####################################################
+
 $(BUILD_DIR)/kernel.o:kernel/kernel.S 
 	$(AS) $(ASFLAGS) -o $@ $<
 
@@ -57,11 +59,12 @@ $(BUILD_DIR)/print.o:lib/kernel/print.S
 	$(AS) $(ASFLAGS) -o $@ $<
 
 ##################链接所有内核目标文件##################################################
-$(BUILD_DIR)/kernel.bin:$(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^
 # $^表示规则中所有依赖文件的集合，如果有重复，会自动去重
 
-.PHONY:mk_dir hd clean build all boot	#定义了6个伪目标
+$(BUILD_DIR)/kernel.bin:$(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $^
+
+.PHONY:mk_dir hd clean build all	#定义了5个伪目标
 mk_dir:
 	if [ ! -d $(BUILD_DIR) ];then mkdir $(BUILD_DIR);fi 
 #判断build文件夹是否存在，如果不存在，则创建
@@ -73,9 +76,8 @@ clean:
 	@cd $(BUILD_DIR) && rm -f ./* && echo "remove ./build all done"
 #-f, --force忽略不存在的文件，从不给出提示，执行make clean就会删除build下所有文件
 
-build:$(BUILD_DIR)/kernel.bin
-	
+build: $(BUILD_DIR)/kernel.bin
 #执行build需要依赖kernel.bin，但是一开始没有，就会递归执行之前写好的语句编译kernel.bin
 
-all:mk_dir boot build hd
+all: mk_dir build hd
 #make all 就是依次执行mk_dir build hd
