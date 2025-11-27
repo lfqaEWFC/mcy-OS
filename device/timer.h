@@ -10,6 +10,6 @@
 
 void timer_init(void);
 void frequency_set(uint8_t counter_port ,uint8_t counter_no,uint8_t rwl, \
-   uint8_t counter_mode,uint16_t counter_value);
+uint8_t counter_mode,uint16_t counter_value);
 
 #endif

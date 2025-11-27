@@ -60,7 +60,6 @@ struct task_struct* thread_start(char* name, int prio, thread_func function, voi
    struct task_struct* thread = get_kernel_pages(1);    // 为线程的pcb申请4K空间的起始地址
    init_thread(thread, name, prio);                     // 初始化线程的pcb
    thread_create(thread, function, func_arg);           // 初始化线程的线程栈
-
 /* 确保之前不在队列中 */
    ASSERT(!elem_find(&thread_ready_list, &thread->general_tag));
    /* 加入就绪线程队列 */
@@ -69,7 +68,6 @@ struct task_struct* thread_start(char* name, int prio, thread_func function, voi
    ASSERT(!elem_find(&thread_all_list, &thread->all_list_tag));
    /* 加入全部线程队列 */
    list_append(&thread_all_list, &thread->all_list_tag);
-
    return thread;
 }
 
@@ -79,7 +77,6 @@ static void make_main_thread(void) {
    就是为其预留了tcb,地址为0xc009e000,因此不需要通过get_kernel_page另分配一页*/
    main_thread = running_thread();
    init_thread(main_thread, "main", 31);
-
 /* main函数是当前线程,当前线程不在thread_ready_list中,
    所以只将其加在thread_all_list中. */
    ASSERT(!elem_find(&thread_all_list, &main_thread->all_list_tag));
@@ -100,7 +97,6 @@ void schedule() {
    /* 若此线程需要某事件发生后才能继续上cpu运行,
       不需要将其加入队列,因为当前线程不在就绪队列中。*/
    }
-
    ASSERT(!list_empty(&thread_ready_list));
    thread_tag = NULL;	  // thread_tag清空
 /* 将thread_ready_list队列中的第一个就绪线程弹出,准备将其调度上cpu. */
