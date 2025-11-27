@@ -1,8 +1,4 @@
 #include "bitmap.h"
-#include "string.h"
-#include "interrupt.h"         
-#include "print.h"             
-#include "debug.h"
 
 //将位图 btmp 初始化
 void bitmap_init(struct bitmap* btmp)

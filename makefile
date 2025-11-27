@@ -5,7 +5,7 @@ HD60M_PATH=/home/mcy-mcy/文档/bochs/hd60M.img
 AS=nasm
 CC=gcc
 LD=ld
-LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/
+LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/
 ASFLAGS= -f elf
 CFLAGS= -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -m32
 #-Wall warning wall的意思，产生尽可能多警告信息，-fno-builtin不要采用内部函数，
@@ -19,7 +19,8 @@ LDFLAGS= -Ttext $(ENTRY_POINT) -e main -Map $(BUILD_DIR)/kernel.map -m elf_i386
 OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/interrupt.o $(BUILD_DIR)/timer.o $(BUILD_DIR)/kernel.o \
 	$(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
-	$(BUILD_DIR)/bitmap.o \
+	$(BUILD_DIR)/list.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/switch.o \
+	$(BUILD_DIR)/thread.o \
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -43,11 +44,17 @@ $(BUILD_DIR)/debug.o:lib/kernel/debug.c
 
 $(BUILD_DIR)/string.o:lib/kernel/string.c
 	$(CC) $(CFLAGS) -o $@ $<
+	
+$(BUILD_DIR)/list.o:lib/kernel/list.c
+	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/memory.o:lib/kernel/memory.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/bitmap.o:lib/kernel/bitmap.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/thread.o:thread/thread.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################
@@ -56,6 +63,9 @@ $(BUILD_DIR)/kernel.o:kernel/kernel.S
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BUILD_DIR)/print.o:lib/kernel/print.S
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BUILD_DIR)/switch.o:thread/switch.S
 	$(AS) $(ASFLAGS) -o $@ $<
 
 ##################链接所有内核目标文件##################################################

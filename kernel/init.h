@@ -1,5 +1,12 @@
 #ifndef __KERNEL_INIT_H
 #define __KERNEL_INIT_H
-void init_all(void);
-#endif
 
+#include "print.h"
+#include "interrupt.h"
+#include "timer.h"
+#include "memory.h"
+#include "thread.h"
+
+void init_all(void);
+
+#endif

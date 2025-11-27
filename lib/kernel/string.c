@@ -1,6 +1,4 @@
-#include "debug.h"
 #include "string.h"
-#include "stddef.h"
 
 //将dst起始的size个字节置为value，这个函数最常用的用法就是来初始化一块内存区域，也就是置为ASCII码为0
 void memset(void* dst_, uint8_t value, uint32_t size) {

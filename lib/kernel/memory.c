@@ -1,9 +1,5 @@
 #include "memory.h"
-#include "print.h"
-#include "debug.h"
-#include "string.h"
 
-#define PG_SIZE 4096
 #define MEM_BITMAP_BASE 0Xc009a000  //位图开始存放的位置
 #define K_HEAP_START    0xc0100000  //内核堆起始位置
 #define PDE_IDX(addr) ((addr & 0xffc00000) >> 22)

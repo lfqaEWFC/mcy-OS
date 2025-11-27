@@ -1,5 +1,9 @@
 #ifndef __KERNEL_DEBUG_H
 #define __KERNEL_DEBUG_H
+
+#include "print.h"
+#include "interrupt.h"
+
 void panic_spin(char* filename, int line, const char* func, const char* condition);
 
 //...是可变参数，也就是随便你传多少个参数，然后原封不动地传到__VA_ARGS_那里去
