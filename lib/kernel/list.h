@@ -1,14 +1,14 @@
 #ifndef __LIB_KERNEL_LIST_H
 #define __LIB_KERNEL_LIST_H
-
-#include "stddef.h"
-#include "stdint.h"
-#include "stdbool.h"
-#include "interrupt.h"
 //用于计算一个结构体成员在结构体中的偏移量
 #define offset(struct_type,member_name) (int)(&(((struct_type*)0)->member_name))
 //用于通过一个结构体成员地址计算出整个结构体的起始地址
 #define member_to_entry(struct_type,member_name,member_ptr) (struct_type*)((int)member_ptr-offset(struct_type,member_name))
+
+#include "interrupt.h"
+#include "stddef.h"
+#include "stdint.h"
+#include "stdbool.h"
 
 /**********   定义链表结点成员结构   ***********
 *结点中不需要数据成元,只要求前驱和后继结点指针*/

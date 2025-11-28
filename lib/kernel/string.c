@@ -1,6 +1,6 @@
 #include "string.h"
 
-//将dst起始的size个字节置为value，这个函数最常用的用法就是来初始化一块内存区域，也就是置为ASCII码为0
+/* 将dst起始的size个字节置为value，这个函数最常用的用法就是来初始化一块内存区域，也就是置为ASCII码为0 */
 void memset(void* dst_, uint8_t value, uint32_t size) {
     ASSERT(dst_ != NULL);
     uint8_t* dst = (uint8_t*)dst_;
@@ -8,7 +8,7 @@ void memset(void* dst_, uint8_t value, uint32_t size) {
         *dst++ = value;
 }
 
-//将src地址起始处size字节的数据移入dst，用于拷贝内存数据
+/* 将src地址起始处size字节的数据移入dst，用于拷贝内存数据 */
 void memcpy(void* dst_, const void* src_, uint32_t size) {
     ASSERT(dst_ != NULL && src_ != NULL);
     uint8_t* dst = dst_;
@@ -17,7 +17,7 @@ void memcpy(void* dst_, const void* src_, uint32_t size) {
         *dst++ = *src++;
 }
 
-//比较两个地址起始的size字节的数据是否相等，如果相等，则返回0；如果不相等，比较第一个不相等的数据，>返回1，<返回-1
+/* 比较两个地址起始的size字节的数据是否相等，如果相等，则返回0；如果不相等，比较第一个不相等的数据，>返回1，<返回-1 */
 int memcmp(const void* a_, const void* b_, uint32_t size) {
     const char* a = a_;
     const char* b = b_;
@@ -32,7 +32,7 @@ int memcmp(const void* a_, const void* b_, uint32_t size) {
    return 0;
 }
 
-//将字符串从src拷贝到dst,并返回目的字符串的起始地址
+/* 将字符串从src拷贝到dst,并返回目的字符串的起始地址 */
 char* strcpy(char* dst_, const char* src_) {
     ASSERT(dst_ != NULL && src_ != NULL);
     char* r = dst_;
@@ -48,7 +48,7 @@ uint32_t strlen(const char* str) {
     return (p - str - 1);
 }
 
-//比较两个字符串，若a_中的字符与b_中的字符全部相同，则返回0，如果不同，那么比较第一个不同的字符，如果a_>b_返回1，反之返回-1
+/* 比较两个字符串，若a_中的字符与b_中的字符全部相同，则返回0，如果不同，那么比较第一个不同的字符，如果a_>b_返回1，反之返回-1 */
 int8_t strcmp (const char* a, const char* b) {
     ASSERT(a != NULL && b != NULL);
     while (*a != 0 && *a == *b) {
