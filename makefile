@@ -21,6 +21,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
 	$(BUILD_DIR)/list.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/switch.o \
 	$(BUILD_DIR)/thread.o $(BUILD_DIR)/sync.o $(BUILD_DIR)/concole.o \
+	$(BUILD_DIR)/keyboard.o
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -61,6 +62,9 @@ $(BUILD_DIR)/sync.o:thread/sync.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/concole.o:device/concole.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/keyboard.o:device/keyboard.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################

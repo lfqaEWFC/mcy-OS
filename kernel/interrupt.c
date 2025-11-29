@@ -10,7 +10,7 @@
 #define PIC_S_CTRL 0xa0	       // 从片的控制端口是0xa0
 #define PIC_S_DATA 0xa1	       // 从片的数据端口是0xa1
 
-#define IDT_DESC_CNT 0x21      // 目前总共支持的中断数
+#define IDT_DESC_CNT 0x30      // 目前总共支持的中断数
 
 /* 中断门描述符结构体 */
 struct gate_desc {
@@ -44,13 +44,14 @@ static void pic_init(void) {
    outb (PIC_M_DATA, 0x01);   // ICW4: 8086模式, 正常EOI
 
    /* 初始化从片 */
-   outb (PIC_S_CTRL, 0x11);    // ICW1: 边沿触发,级联8259, 需要ICW4.
-   outb (PIC_S_DATA, 0x28);    // ICW2: 起始中断向量号为0x28,也就是IR[8-15] 为 0x28 ~ 0x2F.
-   outb (PIC_S_DATA, 0x02);    // ICW3: 设置从片连接到主片的IR2引脚
-   outb (PIC_S_DATA, 0x01);    // ICW4: 8086模式, 正常EOI
-   
-   outb (PIC_M_DATA, 0xfe);    // OCW1: 主片只打开IR0, 也就是只接受时钟中断.
-   outb (PIC_S_DATA, 0xff);    // OCW1: 从片关闭所有中断
+   outb (PIC_S_CTRL, 0x11);   // ICW1: 边沿触发,级联8259, 需要ICW4.
+   outb (PIC_S_DATA, 0x28);   // ICW2: 起始中断向量号为0x28,也就是IR[8-15] 为 0x28 ~ 0x2F.
+   outb (PIC_S_DATA, 0x02);   // ICW3: 设置从片连接到主片的IR2引脚
+   outb (PIC_S_DATA, 0x01);   // ICW4: 8086模式, 正常EOI
+
+  /* 测试键盘,只打开键盘中断，其它全部关闭 */
+   outb (PIC_M_DATA, 0xfd);   //键盘中断在主片ir1引脚上，所以将这个引脚置0，就打开了
+   outb (PIC_S_DATA, 0xff);   // OCW1: 从片关闭所有中断
 
    put_str("   pic_init done\n");
 }

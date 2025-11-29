@@ -7,6 +7,7 @@
 #include "memory.h"
 #include "thread.h"
 #include "console.h"
+#include "keyboard.h"
 
 void init_all(void);
 

@@ -9,10 +9,10 @@ section .data
 global intr_entry_table
 intr_entry_table:
 
+
 %macro VECTOR 2
 section .text
 intr%1entry:		               ; 每个中断处理程序都要压入中断向量号,所以一个中断类型一个中断处理程序，自己知道自己的中断向量号是多少
-
    %2				                  ; 中断若有错误码会压在eip后面 
 ; 以下是保存上下文环境
    push ds
@@ -47,6 +47,7 @@ intr_exit:
    add esp, 4			            ; 跳过error_code
    iretd    
 
+
 VECTOR 0x0 ,ZERO
 VECTOR 0X1 ,ZERO
 VECTOR 0X2 ,ZERO
@@ -80,3 +81,19 @@ VECTOR 0X1D ,ZERO
 VECTOR 0X1E ,ERROR_CODE
 VECTOR 0X1F ,ZERO
 VECTOR 0X20 ,ZERO
+VECTOR 0x21 ,ZERO
+VECTOR 0x22 ,ZERO
+VECTOR 0x23 ,ZERO
+VECTOR 0x24 ,ZERO
+VECTOR 0x25 ,ZERO
+VECTOR 0x26 ,ZERO
+VECTOR 0x27 ,ZERO
+VECTOR 0x28 ,ZERO
+VECTOR 0x29 ,ZERO
+VECTOR 0x2a ,ZERO
+VECTOR 0x2b ,ZERO
+VECTOR 0x2c ,ZERO
+VECTOR 0x2d ,ZERO
+VECTOR 0x2e ,ZERO
+VECTOR 0x2f ,ZERO
+
