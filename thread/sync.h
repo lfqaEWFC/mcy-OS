@@ -1,6 +1,7 @@
 #ifndef __THREAD_SYNC_H
 #define __THREAD_SYNC_H
 
+#include "list.h"
 #include "thread.h"
 #include "global.h"
 #include "debug.h"
