@@ -3,8 +3,8 @@
 /* 初始化io队列ioq */
 void ioqueue_init(struct ioqueue* ioq) {
    lock_init(&ioq->lock);     // 初始化io队列的锁
-   ioq->producer = ioq->consumer = NULL;  // 生产者和消费者置空
-   ioq->head = ioq->tail = 0; // 队列的首尾指针指向缓冲区数组第0个位置
+   ioq->producer = ioq->consumer = NULL;
+   ioq->head = ioq->tail = 0; // 初始化读写位置
 }
 
 /* 返回pos在缓冲区中的下一个位置值 */
@@ -42,10 +42,10 @@ static void wakeup(struct task_struct** waiter) {
 char ioq_getchar(struct ioqueue* ioq) {
    ASSERT(intr_get_status() == INTR_OFF);
 
-/* 若缓冲区(队列)为空,把消费者ioq->consumer记为当前线程自己,
- * 目的是将来生产者往缓冲区里装商品后,生产者知道唤醒哪个消费者,
- * 也就是唤醒当前线程自己*/
-   while (ioq_empty(ioq)) {         //判断缓冲区是不是空的，如果是空的，就把自己阻塞起来
+/* 若缓冲区(队列)为空,把消费者ioq->consumer记为自己,
+ * 为的是当缓冲区里有内容之后让生产者知道唤醒哪个消费者,
+ * 也就是唤醒当前线程自己 */
+   while (ioq_empty(ioq)) {         // 缓冲区是否为空
       lock_acquire(&ioq->lock);	 
       ioq_wait(&ioq->consumer);
       lock_release(&ioq->lock);
@@ -67,7 +67,7 @@ void ioq_putchar(struct ioqueue* ioq, char byte) {
 
 /* 若缓冲区(队列)已经满了,把生产者ioq->producer记为自己,
  * 为的是当缓冲区里的东西被消费者取完后让消费者知道唤醒哪个生产者,
- * 也就是唤醒当前线程自己*/
+ * 也就是唤醒当前线程自己 */
    while (ioq_full(ioq)) {
       lock_acquire(&ioq->lock);
       ioq_wait(&ioq->producer);

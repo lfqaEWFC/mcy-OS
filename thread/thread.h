@@ -22,11 +22,11 @@ enum task_status {
 };
 
 struct intr_stack {
-    uint32_t vec_no;       // kernel.S 宏 VECTOR 中 push %1 压入的中断号
+    uint32_t vec_no;    // 中断号
     uint32_t edi;
     uint32_t esi;
     uint32_t ebp;
-    uint32_t esp_dummy;    // 虽然 pushad 把 esp 也压入,但 esp 是不断变化的,所以会被 popad 忽略
+    uint32_t esp_dummy; // 被 popad 弹出时会跳过 esp
     uint32_t ebx;
     uint32_t edx;
     uint32_t ecx;
@@ -37,7 +37,7 @@ struct intr_stack {
     uint32_t ds;
     
 /*  以下由cpu从低特权级进入高特权级时压入   */
-    uint32_t err_code;     // err_code 会被压入在 eip 之后
+    uint32_t err_code;  // err_code 会被压入在 eip 之后
     void (*eip) (void);
     uint32_t cs;
     uint32_t eflags;
@@ -60,13 +60,13 @@ struct task_struct {
    uint32_t* self_kstack;
    enum task_status status;
    uint8_t priority;		           // 线程优先级
-   char name[16];                  // 用于存储自己的线程的名字
-   uint8_t ticks;	                 // 线程允许上处理器运行还剩下的滴答值，因为priority不能改变，所以要在其之外另行定义一个值来倒计时
-   uint32_t elapsed_ticks;         // 此任务自上cpu运行后至今占用了多少cpu嘀嗒数, 也就是此任务执行了多久
-   struct list_elem general_tag;	  // general_tag的作用是用于线程在一般的队列(如就绪队列或者等待队列)中的结点
-   struct list_elem all_list_tag;  // all_list_tag的作用是用于线程队列thread_all_list（这个队列用于管理所有线程）中的结点
-   uint32_t* pgdir;                // 进程自己页表的虚拟地址
-   uint32_t stack_magic;	        // 如果线程的栈无限生长，总会覆盖pcb的信息，那么需要定义个边界数来检测是否栈已经到了PCB的边界
+   char name[16];
+   uint8_t ticks;	                 // 线程在cpu上占用的嘀嗒数
+   uint32_t elapsed_ticks;         // 线程占用cpu的总嘀嗒数
+   struct list_elem general_tag;	  // 用于线程队列中的结点
+   struct list_elem all_list_tag;  // 用于所有线程队列中的结点
+   uint32_t* pgdir;
+   uint32_t stack_magic;
 };
 
 void thread_create(struct task_struct* pthread, thread_func function, void* func_arg);

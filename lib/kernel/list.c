@@ -10,7 +10,7 @@ void list_init (struct list* list) {
 
 /* 把链表元素elem插入在元素before之前 */
 void list_insert_before(struct list_elem* before, struct list_elem* elem) { 
-   enum intr_status old_status = intr_disable();        //未来这个链表结点插入是用于修改task_struck队列的，这是个公共资源，所以需要不被切换走
+   enum intr_status old_status = intr_disable();
 
 /* 将before前驱元素的后继元素更新为elem, 暂时使before脱离链表*/ 
    before->prev->next = elem; 
@@ -23,15 +23,15 @@ void list_insert_before(struct list_elem* before, struct list_elem* elem) {
 /* 更新before的前驱结点为elem */
    before->prev = elem;
 
-   intr_set_status(old_status);     //关中断之前是开着，那么现在就重新打开中断，如果关着，那么就继续关着
+   intr_set_status(old_status);
 }
 
-/* 添加元素到列表队首,类似栈push操作，添加结点到链表队首，类似于push操作, 参数1是链表的管理结点，参数2是一个新结点 */
+/* 添加元素到列表队头，参数1是链表的管理结点，参数2是一个新结点 */
 void list_push(struct list* plist, struct list_elem* elem) {
    list_insert_before(plist->head.next, elem); // 在队头插入elem
 }
 
-/* 追加元素到链表队尾,类似队列的先进先出操作，添加结点到队尾，实际上就是添加结点到管理结点之前。参数是管理结点与要添加的结点 */
+/* 添加元素到列表队尾，参数1是链表的管理结点，参数2是一个新结点 */
 void list_append(struct list* plist, struct list_elem* elem) {
    list_insert_before(&plist->tail, elem);     // 在队尾的前面插入
 }
@@ -56,33 +56,32 @@ struct list_elem* list_pop(struct list* plist) {
 /* 从链表中查找元素obj_elem,成功时返回true,失败时返回false */
 bool elem_find(struct list* plist, struct list_elem* obj_elem) {
 	struct list_elem* elem = plist->head.next;
-   	while (elem != &plist->tail) {
-      	if (elem == obj_elem) {
-	 	return true;
-      	}
-    elem = elem->next;
-   	}
-   	return false;
+   while (elem != &plist->tail) {
+      if (elem == obj_elem) {
+         return true;
+      }
+      elem = elem->next;
+   }
+   return false;
 }
 
-/* 把列表plist中的每个元素elem和arg传给回调函数func,
- * arg给func用来判断elem是否符合条件.
- * 本函数的功能是遍历列表内所有元素,逐个判断是否有符合条件的元素。
- * 找到符合条件的元素返回元素指针,否则返回NULL. */
+/* 遍历链表，对每个结点调用函数func进行判断,
+ * 找到符合条件的结点后返回该结点指针,找不到则返回NULL
+ * 参数arg是传给回调函数func的参数 */
 struct list_elem* list_traversal(struct list* plist, function func, int arg) {
-   	struct list_elem* elem = plist->head.next;
+   struct list_elem* elem = plist->head.next;
 /* 如果队列为空,就必然没有符合条件的结点,故直接返回NULL */
-   	if (list_empty(plist)) { 
-      	return NULL;
-   	}
+   if (list_empty(plist)) { 
+      return NULL;
+   }
 
-   	while (elem != &plist->tail) {
-      	if (func(elem, arg)) {		  // func返回ture则认为该元素在回调函数中符合条件,命中,故停止继续遍历
-	 		return elem;
-      	}					  // 若回调函数func返回true,则继续遍历
-      	elem = elem->next;	       
-   	}
-   	return NULL;
+   while (elem != &plist->tail) {
+      if (func(elem, arg)) {
+         return elem;
+      }
+      elem = elem->next;	       
+   }
+   return NULL;
 }
 
 /* 返回链表长度，不包含管理结点，参数就是链表的管理结点 */

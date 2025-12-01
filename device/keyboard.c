@@ -1,6 +1,5 @@
 #include "keyboard.h"
 
-//键盘 buffer 寄存器端口号为 0x60
 #define KBD_BUF_PORT 0x60 
 
 #define enter     '\r'
@@ -18,7 +17,7 @@
 #define alt_r_char      char_invisible
 #define caps_lock_char  char_invisible
 
-//定义控制字符的通码和断码
+/* 定义控制字符的通码和断码 */
 #define shift_l_make    0x2a
 #define shift_r_make    0x36
 #define alt_l_make      0x38
@@ -29,11 +28,12 @@
 #define ctrl_r_break    0xe09d
 #define caps_lock_make  0x3a
 
-// 定义键盘缓冲区
+/* 定义键盘缓冲区 */
 struct ioqueue kbd_buf;	
 
-//二维数组，用于记录从0x00到0x3a通码对应的按键的两种情况的ascii码值
-//如果没有，则用ascii 0替代
+/* 定义键盘映射数组
+   第一列为未与shift组合时的键值
+   第二列为与shift组合时的键值 */
 char keymap[][2] = {
 /* 0x00 */	{0,	0},		
 /* 0x01 */	{esc,	esc},		
@@ -107,33 +107,33 @@ static void intr_keyboard_handler(uint8_t vec_nr)
    (void)vec_nr;        //避免编译器警告未使用参数
    bool break_code;     //用于判断传入值是否是断码
    uint16_t scancode = inb(KBD_BUF_PORT);
-   if(scancode == 0xe0) //如果传入是0xe0，说明是处理两字节按键的扫描码，那么就应该立即退出去取出下一个字节
+   if(scancode == 0xe0) //表示是扩展扫描码的第一个字节
    {
       ext_scancode = true;
       return;
    }
-   if(ext_scancode)     //如果能进入这个if，说明上次传入的是两字节按键扫描码的第一个字节
+   if(ext_scancode)     //表示扫描码是扩展扫描码
    {
-      scancode =( (0xe000) | (scancode) );   //合并扫描码，这样两字节的按键的扫描码就得到了完整取出
+      scancode =( (0xe000) | (scancode) );   //将0xe0存入高字节
       ext_scancode = false;
    }
 
-   break_code =( (scancode & 0x0080) != 0 ); //断码=通码+0x80，如果是断码，那么&出来结果!=0，那么break_code值为1
+   break_code =( (scancode & 0x0080) != 0 );
 
-   //断码，判断是否是控制按键的断码，如果是，就要将表示他们按下的标志清零，如果不是，就不处理。   
+   //判断是通码还是断码  
    if(break_code)
    {
       //将扫描码还原成通码
     	uint16_t make_code = (scancode &= 0xff7f);
     	if(make_code == ctrl_l_make || make_code == ctrl_r_make) 
-            ctrl_status = false;  //判断是否松开了ctrl
+         ctrl_status = false;  //判断是否松开了ctrl
     	else if(make_code == shift_l_make || make_code == shift_r_make) 
-            shift_status = false; //判断是否松开了shift
+         shift_status = false; //判断是否松开了shift
     	else if(make_code == alt_l_make || make_code == alt_r_make) 
-            alt_status = false;   //判断是否松开了alt
+         alt_status = false;   //判断是否松开了alt
     	return;
    }
-   //通码，这里的判断是保证我们只处理这些数组中定义的键，以及右alt和右ctrl。
+   //若为通码,则进行如下处理
    else if((scancode > 0x00 && scancode < 0x3b) || (scancode == alt_r_make) || (scancode == ctrl_r_make))
    {
     	bool shift = false;
@@ -157,16 +157,16 @@ static void intr_keyboard_handler(uint8_t vec_nr)
             	shift = true;
       	} 
       	else {
-			if(shift_status + caps_lock_status == true)
-            	shift = true;
+            if(shift_status + caps_lock_status == true)
+               shift = true;
       }
       
 		char cur_char = keymap[index][shift];
       if(cur_char){
-            if (!ioq_full(&kbd_buf)) {
-               ioq_putchar(&kbd_buf, cur_char);
-            }
-	        return;
+         if (!ioq_full(&kbd_buf)) {
+            ioq_putchar(&kbd_buf, cur_char);
+         }
+	      return;
       }
 
       if(scancode == ctrl_l_make || scancode == ctrl_r_make)    	
