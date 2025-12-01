@@ -3,11 +3,11 @@
 //键盘 buffer 寄存器端口号为 0x60
 #define KBD_BUF_PORT 0x60 
 
-#define esc       '\033'
-#define delete    '\x7f'
 #define enter     '\r'
 #define tab       '\t'
 #define backspace '\b'
+#define esc       '\033'
+#define delete    '\x7f'
 
 #define char_invisible  0
 #define ctrl_l_char     char_invisible
@@ -28,6 +28,9 @@
 #define ctrl_r_make     0xe01d
 #define ctrl_r_break    0xe09d
 #define caps_lock_make  0x3a
+
+// 定义键盘缓冲区
+struct ioqueue kbd_buf;	
 
 //二维数组，用于记录从0x00到0x3a通码对应的按键的两种情况的ascii码值
 //如果没有，则用ascii 0替代
@@ -134,7 +137,7 @@ static void intr_keyboard_handler(uint8_t vec_nr)
    else if((scancode > 0x00 && scancode < 0x3b) || (scancode == alt_r_make) || (scancode == ctrl_r_make))
    {
     	bool shift = false;
-    	uint8_t index = (scancode & 0x00ff);//将扫描码留下低字节，这就是在数组中对应的索引  
+    	uint8_t index = (scancode & 0x00ff);
 
 		if ((scancode < 0x0e) || (scancode == 0x29) || (scancode == 0x1a) || \
 			(scancode == 0x1b) || (scancode == 0x2b) || (scancode == 0x27) || \
@@ -158,10 +161,12 @@ static void intr_keyboard_handler(uint8_t vec_nr)
             	shift = true;
       }
       
-		char cur = keymap[index][shift];
-      if(cur){
-         console_put_char(cur);
-         return;
+		char cur_char = keymap[index][shift];
+      if(cur_char){
+            if (!ioq_full(&kbd_buf)) {
+               ioq_putchar(&kbd_buf, cur_char);
+            }
+	        return;
       }
 
       if(scancode == ctrl_l_make || scancode == ctrl_r_make)    	
@@ -184,6 +189,7 @@ static void intr_keyboard_handler(uint8_t vec_nr)
 /* 键盘初始化 */
 void keyboard_init(void) {
    put_str("keyboard init start\n");
+   ioqueue_init(&kbd_buf);
    register_handler(0x21, intr_keyboard_handler);  //注册键盘中断处理函数
    put_str("keyboard init done\n");
 }

@@ -3,7 +3,6 @@
 
 #include "list.h"
 #include "thread.h"
-#include "global.h"
 #include "debug.h"
 #include "interrupt.h"
 #include "stdint.h"
