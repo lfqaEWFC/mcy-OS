@@ -2,7 +2,6 @@
 #include "process.h"
 #include "string.h"
 #include "../lib/kernel/memory.h"
-#include "memory.h"
 #include "print.h"
 #include "thread.h"
 #include "interrupt.h"
@@ -30,7 +29,7 @@ void start_process(void* filename_)
     (void*)((uint32_t)get_a_page\
     (PF_USER,USER_STACTK3_VADDR) + PG_SIZE); //用户栈顶地址
     proc_stack->ss = SELECTOR_U_DATA; //数据段选择子
-    asm volatile ("movl %0,%%esp;jmp intr_exit": : "g"(proc_stack) : "memory");
+    asm volatile ("movl %0,%%esp;jmp intr_exit": :"g"(proc_stack) :"memory");
 }
 
 void page_dir_activate(struct task_struct* p_thread)
