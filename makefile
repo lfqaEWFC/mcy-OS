@@ -5,7 +5,7 @@ HD60M_PATH=/home/mcy-mcy/文档/bochs/hd60M.img
 AS=nasm
 CC=gcc
 LD=ld
-LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/
+LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/ -I userprog/
 ASFLAGS= -f elf
 CFLAGS= -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -m32
 #-Wall warning wall的意思，产生尽可能多警告信息，-fno-builtin不要采用内部函数，
@@ -21,7 +21,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/print.o $(BUILD_DIR)/debug.o $(BUILD_DIR)/string.o \
 	$(BUILD_DIR)/list.o $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/switch.o \
 	$(BUILD_DIR)/thread.o $(BUILD_DIR)/sync.o $(BUILD_DIR)/concole.o \
-	$(BUILD_DIR)/keyboard.o $(BUILD_DIR)/ioquene.o
+	$(BUILD_DIR)/keyboard.o $(BUILD_DIR)/ioquene.o $(BUILD_DIR)/tss.o \
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -68,6 +68,9 @@ $(BUILD_DIR)/keyboard.o:device/keyboard.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/ioquene.o:device/ioquene.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/tss.o:userprog/tss.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################
