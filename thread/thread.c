@@ -1,4 +1,5 @@
 #include "thread.h"
+#include "process.h"
 
 struct task_struct* main_thread;    //主线程PCB
 struct list thread_ready_list;	   //就绪队列
@@ -38,7 +39,7 @@ void thread_create(struct task_struct* pthread, thread_func function, void* func
 /* 初始化线程基本信息 */
 void init_thread(struct task_struct* pthread, char* name, int prio) {
    memset(pthread, 0, sizeof(*pthread));  //把pcb初始化为0
-   strcpy(pthread->name, name);        //将传入的线程的名字填入线程的pcb中
+   strcpy(pthread->name, name);  //将传入的线程的名字填入线程的pcb中
    if(pthread == main_thread){
       pthread->status = TASK_RUNNING; 
    } 
@@ -101,8 +102,10 @@ void schedule() {
    thread_tag = NULL;   //thread_tag清空
 /* 将thread_ready_list队列中的第一个就绪线程弹出,准备将其调度上cpu. */
    thread_tag = list_pop(&thread_ready_list);   
-   struct task_struct* next = member_to_entry(struct task_struct, general_tag, thread_tag);
+   struct task_struct* next = \
+   member_to_entry(struct task_struct, general_tag, thread_tag);
    next->status = TASK_RUNNING;
+   process_activate(next); //激活任务页表
    switch_to(cur, next);
 }
 
@@ -133,7 +136,7 @@ void thread_unblock(struct task_struct* pthread) {
 /* 涉及队就绪队列的修改，此时绝对不能被切换走 */
    enum intr_status old_status = intr_disable();
    ASSERT(((pthread->status == TASK_BLOCKED) || \
-      (pthread->status == TASK_WAITING) || (pthread->status == TASK_HANGING)));
+   (pthread->status == TASK_WAITING) || (pthread->status == TASK_HANGING)));
    if (pthread->status != TASK_READY) {
       ASSERT(!elem_find(&thread_ready_list, &pthread->general_tag));
       if (elem_find(&thread_ready_list, &pthread->general_tag)) {

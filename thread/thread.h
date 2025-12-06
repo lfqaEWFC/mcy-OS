@@ -12,6 +12,9 @@
 
 typedef void thread_func(void*);
 
+extern struct list thread_ready_list;
+extern struct list thread_all_list;
+
 enum task_status {
    TASK_RUNNING,
    TASK_READY,
@@ -22,11 +25,11 @@ enum task_status {
 };
 
 struct intr_stack {
-    uint32_t vec_no;    // 中断号
+    uint32_t vec_no; //中断号
     uint32_t edi;
     uint32_t esi;
     uint32_t ebp;
-    uint32_t esp_dummy; // 被 popad 弹出时会跳过 esp
+    uint32_t esp_dummy; //被 popad 弹出时会跳过 esp
     uint32_t ebx;
     uint32_t edx;
     uint32_t ecx;
@@ -59,13 +62,14 @@ struct thread_stack {
 struct task_struct {
    uint32_t* self_kstack;
    enum task_status status;
-   uint8_t priority;		           // 线程优先级
+   uint8_t priority; //线程优先级
    char name[16];
-   uint8_t ticks;	                 // 线程在cpu上占用的嘀嗒数
-   uint32_t elapsed_ticks;         // 线程占用cpu的总嘀嗒数
-   struct list_elem general_tag;	  // 用于线程队列中的结点
-   struct list_elem all_list_tag;  // 用于所有线程队列中的结点
-   uint32_t* pgdir;
+   uint8_t ticks; //线程时间片
+   uint32_t elapsed_ticks; //线程占用cpu的总嘀嗒数
+   struct list_elem general_tag; //用于线程队列中的结点
+   struct list_elem all_list_tag;   //用于所有线程队列中的结点
+   uint32_t* pgdir;  //线程自己页表的虚拟地址
+   struct virtual_addr userprog_vaddr; //用户进程的虚拟地址池
    uint32_t stack_magic;
 };
 

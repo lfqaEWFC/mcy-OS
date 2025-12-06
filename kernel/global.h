@@ -3,6 +3,16 @@
 
 #include "stdint.h"
 
+//描述符结构体属性packed用于保证gdt_desc按字节对齐
+struct gdt_desc {
+   uint16_t limit_low_word;
+   uint16_t base_low_word;
+   uint8_t  base_mid_byte;
+   uint8_t  attr_low_byte;
+   uint8_t  limit_high_attr_high;
+   uint8_t  base_high_byte;
+}; 
+
 //选择子的RPL字段
 #define RPL0  0
 #define RPL1  1
@@ -23,8 +33,8 @@
 #define IDT_DESC_P 1 
 #define IDT_DESC_DPL0 0
 #define IDT_DESC_DPL3 3
-#define IDT_DESC_32_TYPE 0xE   // 32位的门
-#define IDT_DESC_16_TYPE 0x6   // 16位的门，不用，定义它只为和32位门区分
+#define IDT_DESC_32_TYPE 0xE  // 32位的门
+#define IDT_DESC_16_TYPE 0x6  // 16位的门，不用，定义它只为和32位门区分
 
 #define IDT_DESC_ATTR_DPL0 ((IDT_DESC_P << 7) + (IDT_DESC_DPL0 << 5) + IDT_DESC_32_TYPE)  //DPL为0的中断门描述符attr字段
 #define IDT_DESC_ATTR_DPL3 ((IDT_DESC_P << 7) + (IDT_DESC_DPL3 << 5) + IDT_DESC_32_TYPE)  //DPL为3的中断门描述符attr字段
@@ -32,8 +42,8 @@
 //段描述符属性值
 #define DESC_G_4K    1
 #define DESC_D_32    1
-#define DESC_L	      0     // 64位代码标记，此处标记为0便可。
-#define DESC_AVL     0     // cpu不用此位，暂置为0  
+#define DESC_L	      0  // 64位代码标记，此处标记为0便可。
+#define DESC_AVL     0  // cpu不用此位，暂置为0  
 #define DESC_P	      1
 #define DESC_DPL_0   0
 #define DESC_DPL_1   1
@@ -63,15 +73,17 @@
 #define TSS_ATTR_LOW    ((DESC_P << 7) + (DESC_DPL_0 << 5) + (DESC_S_SYS << 4) + DESC_TYPE_TSS)            //TSS段描述符高32位低字
 #define SELECTOR_TSS    ((4 << 3) + (TI_GDT << 2 ) + RPL0)
 
-struct gdt_desc {
-   uint16_t limit_low_word;
-   uint16_t base_low_word;
-   uint8_t  base_mid_byte;
-   uint8_t  attr_low_byte;
-   uint8_t  limit_high_attr_high;
-   uint8_t  base_high_byte;
-}; 
+//EFLAGS寄存器相关标志位
+#define EFLAGS_MBS	(1 << 1)	// 此项必须要设置
+#define EFLAGS_IF_1	(1 << 9) // if为1,开中断
+#define EFLAGS_IF_0	0  // if为0,关中断
+#define EFLAGS_IOPL_3	(3 << 12)	// IOPL3,用于测试用户程序在非系统调用下进行IO
+#define EFLAGS_IOPL_0	(0 << 12)	// IOPL0
 
+//用于向上取整的宏
+#define DIV_ROUND_UP(X, STEP)	((X + STEP - 1) / (STEP))
+
+//页表相关宏定义
 #define PG_SIZE 4096
 
 #endif
