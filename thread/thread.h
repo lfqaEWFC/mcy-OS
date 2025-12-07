@@ -8,9 +8,10 @@
 #include "interrupt.h"
 #include "print.h"
 #include "string.h"
-#include "memory.h"
+#include "../lib/kernel/memory.h"
 
-typedef void thread_func(void*);
+typedef void      thread_func(void*);
+typedef int16_t   pid_t;
 
 extern struct list thread_ready_list;
 extern struct list thread_all_list;
@@ -61,6 +62,7 @@ struct thread_stack {
 
 struct task_struct {
    uint32_t* self_kstack;
+   pid_t pid;  //线程id
    enum task_status status;
    uint8_t priority; //线程优先级
    char name[16];

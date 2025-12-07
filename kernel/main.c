@@ -8,8 +8,10 @@
 #include "console.h"
 #include "keyboard.h"
 #include "process.h"
+#include "syscall.h"
+#include "syscall-init.h"
 
-int a = 0,b = 0;
+int a=0,b=0;
 void test_thread1(void* arg);
 void test_thread2(void* arg);
 void u_prog_a(void);
@@ -18,11 +20,16 @@ void u_prog_b(void);
 int main(void) {
    put_str("I am kernel\n");
    init_all();
-   thread_start("kernel_thread_a",31,test_thread1,"argA: ");
-   thread_start("kernel_thread_b",31,test_thread2,"argB: ");
    process_execute(u_prog_a,"user_prog_a");
    process_execute(u_prog_b,"user_prog_b");
    intr_enable();
+   
+   console_put_str(" main_pid:0x");
+   console_put_int(sys_getpid());
+   console_put_char('\n');
+   
+   thread_start("kernel_thread_a",31,test_thread1," thread_A:0x");
+   thread_start("kernel_thread_b",31,test_thread2," thread_B:0x");
    
    while(1);
    return 0;
@@ -30,34 +37,34 @@ int main(void) {
 
 void test_thread1(void* arg)
 {
-   (void)arg;
-   while(1)
-   {
-      console_put_str((char*)arg);
-      console_put_int(a);
-      console_put_char(' ');
-   }
+    console_put_str((char*)arg);
+    console_put_int(getpid());
+    console_put_char('\n');
+    console_put_str(" u_prog_a:0x");
+    console_put_int(a);
+    console_put_char('\n');
+    while(1);
 }
 
 void test_thread2(void* arg)
 {
-   (void)arg;
-   while(1)
-   {
-      console_put_str((char*)arg);
-      console_put_int(b);
-      console_put_char(' ');
-   }
+    console_put_str((char*)arg);
+    console_put_int(getpid());
+    console_put_char('\n');
+    console_put_str(" u_prog_b:0x");
+    console_put_int(b);
+    console_put_char('\n');
+    while(1);
 }
 
 void u_prog_a(void)
 {
-   while(1)
-      ++a;
+    a = getpid();
+    while(1);
 }
 
 void u_prog_b(void)
 {
-   while(1)
-      ++b;
+    b = getpid();
+    while(1);
 }

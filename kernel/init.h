@@ -9,6 +9,7 @@
 #include "thread.h"
 #include "console.h"
 #include "keyboard.h"
+#include "syscall-init.h"
 
 void init_all(void);
 

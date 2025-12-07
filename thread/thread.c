@@ -1,6 +1,8 @@
 #include "thread.h"
+#include "sync.h"
 #include "process.h"
 
+struct lock pid_lock;               //分配pid锁
 struct task_struct* main_thread;    //主线程PCB
 struct list thread_ready_list;	   //就绪队列
 struct list thread_all_list;	      //所有任务队列
@@ -21,6 +23,15 @@ static void kernel_thread(thread_func* function, void* func_arg) {
 /* 执行function前要开中断,避免后面的时钟中断被屏蔽,而无法调度其它线程 */
    intr_enable();
    function(func_arg); 
+}
+
+/* 分配pid */
+static pid_t allocate_pid(void) {
+   static pid_t next_pid = 0;
+   lock_acquire(&pid_lock);
+   next_pid++;
+   lock_release(&pid_lock);
+   return next_pid;
 }
 
 /* 初始化线程栈中的运行信息，核心是填入要运行的函数地址与参数 */
@@ -46,6 +57,8 @@ void init_thread(struct task_struct* pthread, char* name, int prio) {
    else{
       pthread->status = TASK_READY;
    }
+/* 分配pid */
+   pthread->pid = allocate_pid(); 
    pthread->priority = prio;            
 /* self_kstack是线程自己在内核态下使用的栈顶地址 */
    pthread->ticks = prio;
@@ -112,6 +125,7 @@ void schedule() {
 /* 初始化线程环境 */
 void thread_init(void) {
    put_str("thread_init start\n");
+   lock_init(&pid_lock);
    list_init(&thread_ready_list);
    list_init(&thread_all_list);
 /* 将当前main函数创建为线程 */
