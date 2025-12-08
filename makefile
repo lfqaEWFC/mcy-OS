@@ -7,7 +7,8 @@ CC=gcc
 LD=ld
 LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/ -I userprog/
 ASFLAGS= -f elf
-CFLAGS= -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -m32
+CFLAGS= -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -m32 -fno-stack-protector
+
 #-Wall warning wall的意思，产生尽可能多警告信息，-fno-builtin不要采用内部函数，
 #-W 会显示警告，但是只显示编译器认为会出现错误的警告
 #-Wstrict-prototypes 要求函数声明必须有参数类型，否则发出警告。-Wmissing-prototypes 必须要有函数声明，否则发出警告
@@ -23,6 +24,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/thread.o $(BUILD_DIR)/sync.o $(BUILD_DIR)/concole.o \
 	$(BUILD_DIR)/keyboard.o $(BUILD_DIR)/ioquene.o $(BUILD_DIR)/tss.o \
 	$(BUILD_DIR)/process.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/syscall_init.o \
+	$(BUILD_DIR)/stdio.o
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -81,6 +83,9 @@ $(BUILD_DIR)/syscall.o:lib/user/syscall.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/syscall_init.o:userprog/syscall-init.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/stdio.o:lib/stdio.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################
