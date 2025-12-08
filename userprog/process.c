@@ -20,7 +20,7 @@ void start_process(void* filename_)
     proc_stack->ecx = proc_stack->eax = 0;
     proc_stack->gs = 0;
     proc_stack->ds = proc_stack->es = \
-    proc_stack->fs = SELECTOR_U_DATA;	//数据段选择子
+    proc_stack->fs = SELECTOR_U_DATA; //数据段选择子
     proc_stack->eip = function; //函数地址 ip
     proc_stack->cs = SELECTOR_U_CODE; //cs ip cs选择子
     proc_stack->eflags = \
@@ -81,7 +81,7 @@ void process_execute(void* filename,char* name)
     struct task_struct* thread = get_kernel_pages(1); //分配一页空间 得到pcb
     init_thread(thread,name,default_prio);  //初始化pcb
     create_user_vaddr_bitmap(thread);   //为虚拟地址位图初始化 分配空间
-    thread_create(thread,start_process,filename);   //创建线程
+    thread_create(thread,start_process,filename); //创建线程
     thread->pgdir = create_page_dir();  //创建页目录表
     
     enum intr_status old_status = intr_disable();     

@@ -9,7 +9,6 @@
 #include "keyboard.h"
 #include "process.h"
 #include "syscall.h"
-#include "syscall-init.h"
 
 int a=0,b=0;
 void test_thread1(void* arg);
@@ -28,8 +27,8 @@ int main(void) {
    console_put_int(sys_getpid());
    console_put_char('\n');
    
-   thread_start("kernel_thread_a",31,test_thread1," thread_A:0x");
-   thread_start("kernel_thread_b",31,test_thread2," thread_B:0x");
+   //thread_start("kernel_thread_a",31,test_thread1," thread_A:0x");
+   //thread_start("kernel_thread_b",31,test_thread2," thread_B:0x");
    
    while(1);
    return 0;
@@ -59,12 +58,12 @@ void test_thread2(void* arg)
 
 void u_prog_a(void)
 {
-    a = getpid();
+    write("u_prog_a say hello ~~\n");
     while(1);
 }
 
 void u_prog_b(void)
 {
-    b = getpid();
+    write("u_prog_b say hello ~~\n");
     while(1);
 }
