@@ -341,10 +341,8 @@ void mfree_page(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
     ASSERT(pg_cnt >= 1 && vaddr % PG_SIZE == 0);
     pg_phy_addr = addr_v2p(vaddr);
 
-    /* 确保待释放的物理内存在低端1M+1k大小的页目录+1k大小的页表地址范围外 */
     ASSERT((pg_phy_addr % PG_SIZE) == 0 && pg_phy_addr >= 0x102000);
 
-    /* 判断pg_phy_addr属于用户物理内存池还是内核物理内存池 */
     if (pg_phy_addr >= user_pool.phy_addr_start)
     {
         vaddr -= PG_SIZE;
@@ -352,19 +350,12 @@ void mfree_page(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
         {
             vaddr += PG_SIZE;
             pg_phy_addr = addr_v2p(vaddr);
-
-            /* 确保物理地址属于用户物理内存池 */
-            ASSERT((pg_phy_addr % PG_SIZE) == 0 && pg_phy_addr >= user_pool.phy_addr_start);
-
-            /* 先将对应的物理页框归还到内存池 */
+            ASSERT((pg_phy_addr % PG_SIZE) == 0 && 
+                pg_phy_addr >= user_pool.phy_addr_start);
             pfree(pg_phy_addr);
-
-            /* 再从页表中清除此虚拟地址所在的页表项pte */
             page_table_pte_remove(vaddr);
-
             page_cnt++;
         }
-        /* 清空虚拟地址的位图中的相应位 */
         vaddr_remove(pf, _vaddr, pg_cnt);
     }
     else
@@ -374,20 +365,13 @@ void mfree_page(enum pool_flags pf, void *_vaddr, uint32_t pg_cnt)
         {
             vaddr += PG_SIZE;
             pg_phy_addr = addr_v2p(vaddr);
-            /* 确保待释放的物理内存只属于内核物理内存池 */
             ASSERT((pg_phy_addr % PG_SIZE) == 0 &&
-                   pg_phy_addr >= kernel_pool.phy_addr_start &&
-                   pg_phy_addr < user_pool.phy_addr_start);
-
-            /* 先将对应的物理页框归还到内存池 */
+                pg_phy_addr >= kernel_pool.phy_addr_start &&
+                pg_phy_addr < user_pool.phy_addr_start);
             pfree(pg_phy_addr);
-
-            /* 再从页表中清除此虚拟地址所在的页表项pte */
             page_table_pte_remove(vaddr);
-
             page_cnt++;
         }
-        /* 清空虚拟地址的位图中的相应位 */
         vaddr_remove(pf, _vaddr, pg_cnt);
     }
 }
