@@ -61,6 +61,8 @@ uint32_t vsprintf(char* str,const char* format,va_list ap)
     	    case 'c':
     	    	*(buf_ptr++) = va_arg(ap,char);
     	    	index_char = *(++index_ptr);
+			default:
+				break;
     	}
     }
     return strlen(str);

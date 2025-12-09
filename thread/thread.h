@@ -72,6 +72,7 @@ struct task_struct {
    struct list_elem all_list_tag;   //用于所有线程队列中的结点
    uint32_t* pgdir;  //线程自己页表的虚拟地址
    struct virtual_addr userprog_vaddr; //用户进程的虚拟地址池
+   struct mem_block_desc u_block_desc[DESC_CNT];
    uint32_t stack_magic;
 };
 

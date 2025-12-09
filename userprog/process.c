@@ -78,11 +78,12 @@ void create_user_vaddr_bitmap(struct task_struct* user_prog)
 
 void process_execute(void* filename,char* name)
 {
-    struct task_struct* thread = get_kernel_pages(1); //分配一页空间 得到pcb
+    struct task_struct* thread = get_kernel_pages(1);
     init_thread(thread,name,default_prio);  //初始化pcb
     create_user_vaddr_bitmap(thread);   //为虚拟地址位图初始化 分配空间
     thread_create(thread,start_process,filename); //创建线程
     thread->pgdir = create_page_dir();  //创建页目录表
+    block_desc_init(thread->u_block_desc); //初始化内存块描述符数组
     
     enum intr_status old_status = intr_disable();     
     ASSERT(!elem_find(&thread_ready_list,&thread->general_tag));
