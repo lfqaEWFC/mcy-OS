@@ -10,8 +10,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-/**********   定义链表结点成员结构   ***********
-*结点中不需要数据成元,只要求前驱和后继结点指针*/
+/* 节点中只要求前驱和后继结点指针 */
 struct list_elem {
    struct list_elem* prev; // 前躯结点
    struct list_elem* next; // 后继结点
