@@ -61,5 +61,8 @@ uint32_t addr_v2p(uint32_t vaddr);
 void mem_pool_init(uint32_t all_mem);
 void block_desc_init(struct mem_block_desc* desc_array);
 void* sys_malloc(uint32_t size);
+void mfree_page(enum pool_flags pf, void* _vaddr, uint32_t pg_cnt);
+void pfree(uint32_t pg_phy_addr);
+void sys_free(void* ptr);
 
 #endif
