@@ -6,6 +6,7 @@
 #include "thread.h"
 #include "string.h"
 #include "memory.h"
+#include "console.h"
 
 #define syscall_nr 32
 typedef void* syscall;

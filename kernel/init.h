@@ -10,6 +10,7 @@
 #include "console.h"
 #include "keyboard.h"
 #include "syscall-init.h"
+#include "ide.h"
 
 void init_all(void);
 

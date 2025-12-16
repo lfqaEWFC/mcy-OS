@@ -6,6 +6,7 @@ struct lock pid_lock;               //分配pid锁
 struct task_struct* main_thread;    //主线程PCB
 struct list thread_ready_list;	   //就绪队列
 struct list thread_all_list;	      //所有任务队列
+struct task_struct* idle_thread;    //idle线程
 static struct list_elem* thread_tag;//用于保存队列中的线程结点
 
 extern void switch_to(struct task_struct* cur, struct task_struct* next);
@@ -111,6 +112,9 @@ void schedule() {
    /* 若此线程需要某事件发生后才能继续上cpu运行,
     * 不需要将其加入队列,因为当前线程不在就绪队列中。*/
    }
+   if(list_empty(&thread_ready_list)) {
+      thread_unblock(idle_thread);
+   }
    ASSERT(!list_empty(&thread_ready_list));
    thread_tag = NULL;   //thread_tag清空
 /* 将thread_ready_list队列中的第一个就绪线程弹出,准备将其调度上cpu. */
@@ -122,6 +126,29 @@ void schedule() {
    switch_to(cur, next);
 }
 
+/* idle 线程 */
+static void idle(void* args)
+{
+   (void)args;
+   while(1)
+   {
+      thread_block(TASK_BLOCKED);
+      asm volatile ("sti;hlt" : : :"memory");
+   }
+}
+
+/* 主动出让CPU */
+void thread_yield(void)
+{
+   struct task_struct* cur = running_thread();
+   enum intr_status old_status = intr_disable();
+   ASSERT(!elem_find(&thread_ready_list,&cur->general_tag));
+   list_append(&thread_ready_list,&cur->general_tag);   //放到就绪队列末尾
+   cur->status = TASK_READY; //状态设置为READY 可被调度
+   schedule();						
+   intr_set_status(old_status);
+}
+
 /* 初始化线程环境 */
 void thread_init(void) {
    put_str("thread_init start\n");
@@ -130,6 +157,7 @@ void thread_init(void) {
    list_init(&thread_all_list);
 /* 将当前main函数创建为线程 */
    make_main_thread();
+   idle_thread = thread_start("idle",10,idle,NULL);
    put_str("thread_init done\n");
 }
 

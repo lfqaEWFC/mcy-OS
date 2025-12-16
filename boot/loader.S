@@ -129,6 +129,8 @@ p_mode_start:
     mov ds, ax
     mov es, ax
     mov ss, ax
+    mov esp, 0x90000
+    mov ebp, esp
 
 ; ----------- 将 GS 指向显存段（便于用 GS: 偏移直接访问显存）-----------
     mov ax, SELECTOR_VIDEO

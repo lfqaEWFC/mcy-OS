@@ -24,7 +24,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/thread.o $(BUILD_DIR)/sync.o $(BUILD_DIR)/concole.o \
 	$(BUILD_DIR)/keyboard.o $(BUILD_DIR)/ioquene.o $(BUILD_DIR)/tss.o \
 	$(BUILD_DIR)/process.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/syscall_init.o \
-	$(BUILD_DIR)/stdio.o
+	$(BUILD_DIR)/stdio.o $(BUILD_DIR)/stdio-kernel.o $(BUILD_DIR)/ide.o \
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -58,6 +58,9 @@ $(BUILD_DIR)/memory.o:lib/kernel/memory.c
 $(BUILD_DIR)/bitmap.o:lib/kernel/bitmap.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+$(BUILD_DIR)/stdio-kernel.o:lib/kernel/stdio-kernel.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 $(BUILD_DIR)/thread.o:thread/thread.c
 	$(CC) $(CFLAGS) -o $@ $<
 
@@ -71,6 +74,9 @@ $(BUILD_DIR)/keyboard.o:device/keyboard.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/ioquene.o:device/ioquene.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/ide.o:device/ide.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/tss.o:userprog/tss.c

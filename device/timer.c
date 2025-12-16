@@ -8,6 +8,7 @@
 #define COUNTER_MODE		2
 #define READ_WRITE_LATCH	3
 #define PIT_COUNTROL_PORT	0x43
+#define mil_second_per_init   1000 / IRQ0_FREQUENCY
 
 void frequency_set(uint8_t counter_port ,uint8_t counter_no,uint8_t rwl, \
    uint8_t counter_mode,uint16_t counter_value)
@@ -27,7 +28,7 @@ static void intr_timer_handler(uint8_t vec_nr) {
 
    ASSERT(cur_thread->stack_magic == 0x19870916);   // 检查栈是否溢出
 
-   cur_thread->elapsed_ticks++;     // 记录此线程占用的cpu时间嘀
+   cur_thread->elapsed_ticks++;     // 记录此线程占用的cpu时间
    ticks++;	  // 从内核第一次处理时间中断后开始至今的滴哒数,内核态和用户态总共的嘀哒数
 
    if (cur_thread->ticks == 0) {    // 若进程时间片用完就开始调度新的进程上cpu
@@ -45,4 +46,20 @@ void timer_init(void) {
    frequency_set(COUNTER0_PORT, COUNTER0_NO, READ_WRITE_LATCH, COUNTER_MODE, COUNTER0_VALUE);
    register_handler(0x20, intr_timer_handler);
    put_str("timer_init done\n");
+}
+
+/* 休息n个时钟中断 */
+void ticks_to_sleep(uint32_t sleep_ticks)
+{
+   uint32_t start_tick = ticks;
+   while(ticks - start_tick < sleep_ticks)
+   thread_yield();
+}
+
+/* 通过毫秒的中断数来调用ticks_to_sleep达到休息毫秒的作用 */
+void mtime_sleep(uint32_t m_seconds)
+{
+   uint32_t sleep_ticks = DIV_ROUND_UP(m_seconds,mil_second_per_init);
+   ASSERT(sleep_ticks > 0);
+   ticks_to_sleep(sleep_ticks);
 }
