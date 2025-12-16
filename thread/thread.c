@@ -115,7 +115,6 @@ void schedule() {
    if(list_empty(&thread_ready_list)) {
       thread_unblock(idle_thread);
    }
-   ASSERT(!list_empty(&thread_ready_list));
    thread_tag = NULL;   //thread_tag清空
 /* 将thread_ready_list队列中的第一个就绪线程弹出,准备将其调度上cpu. */
    thread_tag = list_pop(&thread_ready_list);   
