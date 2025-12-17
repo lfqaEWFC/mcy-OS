@@ -13,11 +13,11 @@ struct partition
     uint32_t sec_cnt;           // 扇区数
     struct disk *my_disk;       // 分区所属硬盘
     struct list_elem part_tag;  // 所在队列中的标记
-    char name[8];               // 分区名字
-    struct super_block *sb;     // 本分区 超级块
+    char name[8];               // 分区名称
+    struct super_block *sb;     // 本分区超级块
     struct bitmap block_bitmap; // 块位图
     struct bitmap inode_bitmap; // i结点位图
-    struct list open_inodes;    // 本分区打开
+    struct list open_inodes;    // 本分区打开的i结点队列
 };
 
 struct partition_table_entry
