@@ -11,6 +11,7 @@
 #include "keyboard.h"
 #include "syscall-init.h"
 #include "ide.h"
+#include "fs.h"
 
 void init_all(void);
 

@@ -63,6 +63,11 @@ struct ide_channel
     struct disk devices[2];     // 一通道2硬盘 1主1从
 };
 
+extern struct ide_channel channels[];
+extern uint8_t channel_cnt;
+extern struct list partition_list;
+extern uint8_t p_no, l_no;
+
 void ide_init(void);
 void select_disk(struct disk *hd);
 void select_sector(struct disk *hd, uint32_t lba, uint8_t sec_cnt);

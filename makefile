@@ -5,7 +5,7 @@ HD60M_PATH=/home/mcy-mcy/文档/bochs/hd60M.img
 AS=nasm
 CC=gcc
 LD=ld
-LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/ -I userprog/
+LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/ -I userprog/ -I fs/
 ASFLAGS= -f elf
 CFLAGS= -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -m32 -fno-stack-protector
 
@@ -25,6 +25,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/keyboard.o $(BUILD_DIR)/ioquene.o $(BUILD_DIR)/tss.o \
 	$(BUILD_DIR)/process.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/syscall_init.o \
 	$(BUILD_DIR)/stdio.o $(BUILD_DIR)/stdio-kernel.o $(BUILD_DIR)/ide.o \
+	$(BUILD_DIR)/fs.o \
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -92,6 +93,9 @@ $(BUILD_DIR)/syscall_init.o:userprog/syscall-init.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/stdio.o:lib/stdio.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/fs.o:fs/fs.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################
