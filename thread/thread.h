@@ -13,6 +13,7 @@
 
 typedef void      thread_func(void*);
 typedef int16_t   pid_t;
+#define MAX_FILES_OPEN_PER_PROC 8
 
 extern struct list thread_ready_list;
 extern struct list thread_all_list;
@@ -69,6 +70,7 @@ struct task_struct {
    char name[16];
    uint8_t ticks; //线程时间片
    uint32_t elapsed_ticks; //线程占用cpu的总嘀嗒数
+   int32_t fd_table[MAX_FILES_OPEN_PER_PROC]; //线程文件描述符表
    struct list_elem general_tag; //用于线程队列中的结点
    struct list_elem all_list_tag;   //用于所有线程队列中的结点
    uint32_t* pgdir;  //线程自己页表的虚拟地址

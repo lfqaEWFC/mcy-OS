@@ -2,9 +2,9 @@
 
 /* 初始化信号量 */
 void sema_init(struct semaphore* psema, uint8_t value) {
-   psema->value = value;            // 为信号量赋初值
-      list_init(&psema->waiters);   //初始化信号量的等待队列
-   }
+   psema->value = value;         // 为信号量赋初值
+   list_init(&psema->waiters);   //初始化信号量的等待队列
+}
 
 /* 用于初始化锁 plock */
 void lock_init(struct lock* plock) {

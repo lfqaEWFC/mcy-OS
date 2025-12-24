@@ -58,6 +58,16 @@ void init_thread(struct task_struct* pthread, char* name, int prio) {
    else{
       pthread->status = TASK_READY;
    }
+/* 初始化文件描述符表 */
+   /* 预留标准输入输出 */
+   pthread->fd_table[0] = 0;  //stdin
+   pthread->fd_table[1] = 1;  //stdout
+   pthread->fd_table[2] = 2;  //stderr
+   uint8_t fd_idx = 3;
+   while(fd_idx < MAX_FILES_OPEN_PER_PROC) {
+      pthread->fd_table[fd_idx] = -1;
+      fd_idx++;
+   }
 /* 分配pid */
    pthread->pid = allocate_pid(); 
    pthread->priority = prio;            
