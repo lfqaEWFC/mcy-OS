@@ -24,16 +24,26 @@ int main(void) {
    process_execute(u_prog_b, "u_prog_b");
    thread_start("k_thread_a", 31, k_thread_a, "I am thread_a");
    thread_start("k_thread_b", 31, k_thread_b, "I am thread_b");
-   sys_open("/file1", O_CREAT);
-   sys_open("/file2", O_CREAT);
-   uint32_t fd = sys_open("/file1", O_RDONLY);
-   printf("fd:%d\n", fd);
+   uint32_t fd = sys_open("/file3", O_RDWR);
+   printf("open /file3, fd:%d\n", fd);
+   char buf[64] = {0};
+   int read_bytes = sys_read(fd, buf, 18);
+   printf("1_ read %d bytes:\n%s", read_bytes, buf);
+
+   memset(buf, 0, 64);
+   read_bytes = sys_read(fd, buf, 6);
+   printf("2_ read %d bytes:\n%s", read_bytes, buf);
+
+   memset(buf, 0, 64);
+   read_bytes = sys_read(fd, buf, 6);
+   printf("3_ read %d bytes:\n%s", read_bytes, buf);
+
+   printf("\n________  close file3 and reopen  ________\n");
    sys_close(fd);
-   printf("%d closed now\n", fd);
-   fd = sys_open("/file2", O_RDONLY);
-   printf("fd:%d\n", fd);
-   sys_close(fd);
-   printf("%d closed now\n", fd);
+   fd = sys_open("/file3", O_RDWR);
+   memset(buf, 0, 64);
+   read_bytes = sys_read(fd, buf, 24);
+   printf("4_ read %d bytes:\n%s", read_bytes, buf);
    while(1);
    return 0;
 }

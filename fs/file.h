@@ -37,6 +37,8 @@ int32_t block_bitmap_alloc(struct partition *part);
 void bitmap_sync(struct partition *part, uint32_t bit_idx, uint8_t btmp);
 int32_t file_create(struct dir *parent_dir, char *filename, uint8_t flag);
 int32_t file_open(uint32_t inode_no, uint8_t flags);
-int32_t sys_open(const char *pathname, uint8_t flags);
+int32_t file_close(struct file *file);
+int32_t file_write(struct file *file, const void *buf, uint32_t count);
+int32_t file_read(struct file *file, void *buf, uint32_t count);
 
 #endif

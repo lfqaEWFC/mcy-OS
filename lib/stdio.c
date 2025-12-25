@@ -71,13 +71,11 @@ uint32_t vsprintf(char* str,const char* format,va_list ap)
 uint32_t printf(const char* format, ...)
 {
     va_list args;
-    uint32_t retval;
     va_start(args,format);
     char buf[1024] = {0};
-    retval = vsprintf(buf,format,args);
+    vsprintf(buf,format,args);
     va_end(args);
-    write(buf);
-    return retval;
+    return write(1, buf, strlen(buf));
 }
 
 uint32_t sprintf(char* buf, const char* format, ...) {
