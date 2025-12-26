@@ -10,6 +10,7 @@
 #include "print.h"
 #include "init.h"
 #include "fs.h"
+#include "dir.h"
 
 void k_thread_a(void*);
 void k_thread_b(void*);
@@ -19,16 +20,40 @@ void u_prog_b(void);
 int main(void) {
    put_str("I am kernel\n");
    init_all();
-   intr_enable();
 
-   process_execute(u_prog_a, "u_prog_a");
-   process_execute(u_prog_b, "u_prog_b");
-   thread_start("k_thread_a", 31, k_thread_a, "I am thread_a");
-   thread_start("k_thread_b", 31, k_thread_b, "I am thread_b");
-
-   printf("/file1 delete %s!\n", sys_unlink("/file1") == 0 ? "done" : "fail");
-   printf("/file2 delete %s!\n", sys_unlink("/file2") == 0 ? "done" : "fail");
-   printf("/file3 delete %s!\n", sys_unlink("/file3") == 0 ? "done" : "fail");
+   /********  测试代码  ********/
+   struct dir *p_dir = sys_opendir("/dir1/subdir1");
+   if (p_dir)
+   {
+      printf("/dir1/subdir1 open done!\ncontent:\n");
+      char *type = NULL;
+      struct dir_entry *dir_e = NULL;
+      while ((dir_e = sys_readdir(p_dir)))
+      {
+         if (dir_e->f_type == FT_REGULAR)
+         {
+               type = "regular";
+         }
+         else
+         {
+               type = "directory";
+         }
+         printf("      %s   %s\n", type, dir_e->filename);
+      }
+      if (sys_closedir(p_dir) == 0)
+      {
+         printf("/dir1/subdir1 close done!\n");
+      }
+      else
+      {
+         printf("/dir1/subdir1 close fail!\n");
+      }
+   }
+   else
+   {
+      printf("/dir1/subdir1 open fail!\n");
+   }
+   /********  测试代码  ********/
 
    while(1);
 
