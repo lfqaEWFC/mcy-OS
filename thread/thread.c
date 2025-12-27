@@ -76,6 +76,7 @@ void init_thread(struct task_struct* pthread, char* name, int prio) {
    pthread->elapsed_ticks = 0;
    pthread->pgdir = NULL;	//线程没有自己的地址空间，指向自己的页表虚拟地址	
    pthread->self_kstack = (uint32_t*)((uint32_t)pthread + PG_SIZE);
+   pthread->cwd_inode_nr = 0; //默认工作目录为根目录
    pthread->stack_magic = 0x19870916;  //定义边界数字来判断线程的栈是否已经生长到覆盖pcb信息
 }
 

@@ -20,43 +20,19 @@ void u_prog_b(void);
 int main(void) {
    put_str("I am kernel\n");
    init_all();
-
+   intr_enable(); // 开中断
    /********  测试代码  ********/
-   struct dir *p_dir = sys_opendir("/dir1/subdir1");
-   if (p_dir)
-   {
-      printf("/dir1/subdir1 open done!\ncontent:\n");
-      char *type = NULL;
-      struct dir_entry *dir_e = NULL;
-      while ((dir_e = sys_readdir(p_dir)))
-      {
-         if (dir_e->f_type == FT_REGULAR)
-         {
-               type = "regular";
-         }
-         else
-         {
-               type = "directory";
-         }
-         printf("      %s   %s\n", type, dir_e->filename);
-      }
-      if (sys_closedir(p_dir) == 0)
-      {
-         printf("/dir1/subdir1 close done!\n");
-      }
-      else
-      {
-         printf("/dir1/subdir1 close fail!\n");
-      }
-   }
-   else
-   {
-      printf("/dir1/subdir1 open fail!\n");
-   }
+   struct stat obj_stat;
+   sys_stat("/", &obj_stat);
+   printf("/`s info\n   i_no:%d\n   size:%d\n   filetype:%s\n",
+         obj_stat.st_ino, obj_stat.st_size,
+         obj_stat.st_filetype == 2 ? "directory" : "regular");
+   sys_stat("/dir1", &obj_stat);
+   printf("/dir1`s info\n   i_no:%d\n   size:%d\n   filetype:%s\n",
+         obj_stat.st_ino, obj_stat.st_size,
+         obj_stat.st_filetype == 2 ? "directory" : "regular");
    /********  测试代码  ********/
-
    while(1);
-
    return 0;
 }
 
