@@ -5,7 +5,7 @@ HD60M_PATH=/home/mcy-mcy/文档/bochs/hd60M.img
 AS=nasm
 CC=gcc
 LD=ld
-LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/ -I userprog/ -I fs/
+LIB= -I lib/ -I lib/kernel/ -I lib/user/ -I kernel/ -I device/ -I thread/ -I userprog/ -I fs/ -I shell/
 ASFLAGS= -f elf
 CFLAGS= -Wall $(LIB) -c -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes -m32 -fno-stack-protector
 
@@ -26,7 +26,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/process.o $(BUILD_DIR)/syscall.o $(BUILD_DIR)/syscall_init.o \
 	$(BUILD_DIR)/stdio.o $(BUILD_DIR)/stdio-kernel.o $(BUILD_DIR)/ide.o \
 	$(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o $(BUILD_DIR)/inode.o \
-	$(BUILD_DIR)/dir.o $(BUILD_DIR)/fork.o\
+	$(BUILD_DIR)/dir.o $(BUILD_DIR)/fork.o $(BUILD_DIR)/shell.o \
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -109,6 +109,9 @@ $(BUILD_DIR)/inode.o:fs/inode.c
 	$(CC) $(CFLAGS) -o $@ $<
 	
 $(BUILD_DIR)/dir.o:fs/dir.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/shell.o:shell/shell.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################
