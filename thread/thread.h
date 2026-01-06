@@ -65,6 +65,7 @@ struct thread_stack {
 struct task_struct {
    uint32_t* self_kstack;
    pid_t pid;  //线程id
+   pid_t parent_pid; //父进程id
    enum task_status status;
    uint8_t priority; //线程优先级
    char name[16];
@@ -89,5 +90,6 @@ void thread_init(void);
 void thread_block(enum task_status stat);
 void thread_unblock(struct task_struct* pthread);
 void thread_yield(void);
+pid_t fork_pid(void);
 
 #endif

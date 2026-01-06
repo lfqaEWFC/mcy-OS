@@ -31,7 +31,7 @@ struct mem_block_desc k_block_descs[DESC_CNT]; // 内核内存块描述符数组
 struct pool kernel_pool, user_pool; // 生成内核物理内存池 和 用户物理内存池
 struct virtual_addr kernel_vaddr;   // 生成内核虚拟内存池
 
-// 获取 pg_cnt 页连续虚拟内存的起始地址
+//  申请并获取 pg_cnt 页连续虚拟内存的起始地址
 void *vaddr_get(enum pool_flags pf, uint32_t pg_cnt)
 {
     int vaddr_start = 0, bit_idx_start = -1;
@@ -520,6 +520,22 @@ void *sys_malloc(uint32_t size)
         lock_release(&mem_pool->lock);
         return (void *)b;
     }
+}
+
+/* 安装1页大小的vaddr,专门针对fork时虚拟地址位图无须操作的情况 */
+void *get_a_page_without_opvaddrbitmap(enum pool_flags pf, uint32_t vaddr)
+{
+    struct pool *mem_pool = pf & PF_KERNEL ? &kernel_pool : &user_pool;
+    lock_acquire(&mem_pool->lock);
+    void *page_phyaddr = palloc(mem_pool);
+    if (page_phyaddr == NULL)
+    {
+        lock_release(&mem_pool->lock);
+        return NULL;
+    }
+    page_table_add((void *)vaddr, page_phyaddr);
+    lock_release(&mem_pool->lock);
+    return (void *)vaddr;
 }
 
 // 内存管理初始化

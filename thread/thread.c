@@ -9,6 +9,7 @@ struct list thread_all_list;	      //所有任务队列
 struct task_struct* idle_thread;    //idle线程
 static struct list_elem* thread_tag;//用于保存队列中的线程结点
 
+extern void init(void);
 extern void switch_to(struct task_struct* cur, struct task_struct* next);
 
 /* 获取当前线程pcb指针 */
@@ -165,6 +166,8 @@ void thread_init(void) {
    lock_init(&pid_lock);
    list_init(&thread_ready_list);
    list_init(&thread_all_list);
+/* 先创建第一个用户进程:init */
+   process_execute(init, "init");
 /* 将当前main函数创建为线程 */
    make_main_thread();
    idle_thread = thread_start("idle",10,idle,NULL);
@@ -199,3 +202,10 @@ void thread_unblock(struct task_struct* pthread) {
    } 
    intr_set_status(old_status);
 }
+
+/* fork进程时为其分配pid */
+pid_t fork_pid(void)
+{
+    return allocate_pid();
+}
+
