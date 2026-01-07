@@ -162,6 +162,9 @@ static void intr_keyboard_handler(uint8_t vec_nr)
       }
       
 		char cur_char = keymap[index][shift];
+      if ((ctrl_status && cur_char == 'l') || (ctrl_status && cur_char == 'u')) {
+         cur_char -= 'a';
+      }
       if(cur_char){
          if (!ioq_full(&kbd_buf)) {
             ioq_putchar(&kbd_buf, cur_char);
