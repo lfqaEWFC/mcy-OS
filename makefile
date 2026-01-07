@@ -27,6 +27,7 @@ OBJS=$(BUILD_DIR)/main.o $(BUILD_DIR)/init.o $(BUILD_DIR)/memory.o \
 	$(BUILD_DIR)/stdio.o $(BUILD_DIR)/stdio-kernel.o $(BUILD_DIR)/ide.o \
 	$(BUILD_DIR)/fs.o $(BUILD_DIR)/file.o $(BUILD_DIR)/inode.o \
 	$(BUILD_DIR)/dir.o $(BUILD_DIR)/fork.o $(BUILD_DIR)/shell.o \
+	$(BUILD_DIR)/buildin_cmd.o
 #顺序最好是调用在前，实现在后
 	
 ######################编译C内核代码###################################################
@@ -112,6 +113,9 @@ $(BUILD_DIR)/dir.o:fs/dir.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/shell.o:shell/shell.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(BUILD_DIR)/buildin_cmd.o:shell/buildin_cmd.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 ###################编译汇编内核代码#####################################################

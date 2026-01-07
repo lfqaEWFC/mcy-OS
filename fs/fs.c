@@ -282,7 +282,7 @@ void filesys_init()
 }
 
 /* 将最上层路径名称解析出来 */
-static char *path_parse(char *pathname, char *name_store)
+char *path_parse(char *pathname, char *name_store)
 {
     if (pathname[0] == '/')
     { // 根目录不需要单独解析
