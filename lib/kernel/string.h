@@ -1,7 +1,7 @@
 #ifndef __LIB_STRING_H
 #define __LIB_STRING_H
 
-#include "debug.h"
+#include "assert.h"
 #include "stdint.h"
 #include "stddef.h"
 

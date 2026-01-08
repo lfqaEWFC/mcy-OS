@@ -1,5 +1,5 @@
 #include "buildin_cmd.h"
-#include "debug.h"
+#include "assert.h"
 #include "dir.h"
 #include "string.h"
 #include "fs.h"
@@ -10,7 +10,7 @@
 /* 将路径old_abs_path中的..和.转换为实际路径后存入new_abs_path */
 static void wash_path(char *old_abs_path, char *new_abs_path)
 {
-    ASSERT(old_abs_path[0] == '/');
+    assert(old_abs_path[0] == '/');
     char name[MAX_FILE_NAME_LEN] = {0};
     char *sub_path = old_abs_path;
     sub_path = path_parse(sub_path, name);
@@ -75,6 +75,7 @@ void make_clear_abs_path(char *path, char *final_path)
 /* pwd命令的内建函数 */
 void buildin_pwd(uint32_t argc, char **argv)
 {
+    (void)argv;
     if (argc != 1)
     {
         printf("pwd: no argument support!\n");
@@ -251,6 +252,8 @@ void buildin_ls(uint32_t argc, char **argv)
 /* ps命令内建函数 */
 void buildin_ps(uint32_t argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
     if (argc != 1)
     {
         printf("ps: no argument support!\n");
@@ -262,6 +265,7 @@ void buildin_ps(uint32_t argc, char **argv)
 /* clear命令内建函数 */
 void buildin_clear(uint32_t argc, char **argv)
 {
+    (void)argv;
     if (argc != 1)
     {
         printf("clear: no argument support!\n");

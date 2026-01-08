@@ -933,6 +933,7 @@ char *sys_getcwd(char *buf, uint32_t size)
     {
         buf[0] = '/';
         buf[1] = 0;
+        sys_free(io_buf);
         return buf;
     }
 
@@ -946,7 +947,7 @@ char *sys_getcwd(char *buf, uint32_t size)
     {
         parent_inode_nr = get_parent_dir_inode_nr(child_inode_nr, io_buf);
         if (get_child_dir_name(parent_inode_nr, child_inode_nr, full_path_reverse, io_buf) == -1)
-        { // 或未找到名字,失败退出
+        {
             sys_free(io_buf);
             return NULL;
         }

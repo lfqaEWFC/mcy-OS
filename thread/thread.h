@@ -11,9 +11,10 @@
 #include "../lib/kernel/memory.h"
 #include "stddef.h"
 
-typedef void      thread_func(void*);
+typedef void   thread_func(void*);
 typedef int16_t   pid_t;
 #define MAX_FILES_OPEN_PER_PROC 8
+#define TASK_NAME_LEN 16
 
 extern struct list thread_ready_list;
 extern struct list thread_all_list;

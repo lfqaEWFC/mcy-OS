@@ -151,3 +151,10 @@ void ps(void)
 {
     _syscall0(SYS_PS);
 }
+
+/* 执行程序pathname, 参数argv */
+int32_t execv(const char *pathname, char **argv)
+{
+    return _syscall2(SYS_EXECV, pathname, argv);
+}
+
