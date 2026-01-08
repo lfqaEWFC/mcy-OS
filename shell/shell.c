@@ -27,7 +27,7 @@ static void readline(char *buf, int32_t count)
     assert(buf != NULL && count > 0);
     char *pos = buf;
     while (read(stdin_no, pos, 1) != -1 && (pos - buf) < count)
-    { // 在不出错情况下,直到找到回车符才返回
+    {
         switch (*pos)
         {
         /* 找到回车或换行符后认为键入的命令结束,直接返回 */
@@ -43,7 +43,7 @@ static void readline(char *buf, int32_t count)
                 printf("\b");
             }
             break;
-                /* ctrl+l 清屏 */
+        /* ctrl+l 清屏 */
         case 'l' - 'a':
             /* 1 先将当前的字符'l'-'a'置为0 */
             *pos = 0;
@@ -185,7 +185,7 @@ void my_shell(void)
             if (pid)
             { // 父进程
                 /* 下面这个while必须要加上,否则父进程一般情况下会比子进程先执行,
-                因此会进行下一轮循环将findl_path清空,这样子进程将无法从final_path中获得参数*/
+                因此会进行下一轮循环将findl_path清空,这样子进程将无法从final_path中获得参数 */
                 while(1);
             }
             else
