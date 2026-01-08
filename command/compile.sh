@@ -1,4 +1,4 @@
-####  此脚本应该在command目录下执行
+####  此脚本应该在command目录下执行  ####
 
 if [[ ! -d "../lib" || ! -d "../build" ]];then
    echo "dependent dir don\`t exist!"
