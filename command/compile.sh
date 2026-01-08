@@ -10,6 +10,7 @@ if [[ ! -d "../lib" || ! -d "../build" ]];then
    fi 
    exit
 fi
+
 CC="gcc-4.4"
 BIN="prog_no_arg"
 CFLAGS="-Wall -c -fno-builtin -W -Wstrict-prototypes \
