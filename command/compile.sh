@@ -12,10 +12,12 @@ if [[ ! -d "../lib" || ! -d "../build" ]];then
 fi
 
 CC="gcc-4.4"
-BIN="prog_arg"
+BIN="cat"
 CFLAGS="-Wall -c -fno-builtin -W -Wstrict-prototypes \
     -Wmissing-prototypes -Wsystem-headers -m32 -fno-stack-protector"
-LIBS="-I ../lib -I ../lib/user -I ../fs -I ../thread -I ../lib/kernel -I ../kernel -I ../device"
+LIBS="-I ../lib/ -I ../lib/kernel/ -I ../lib/user/ -I \
+      ../kernel/ -I ../device/ -I ../thread/ -I \
+      ../userprog/ -I ../fs/ -I ../shell/ "
 OBJS="../build/string.o ../build/syscall.o \
       ../build/stdio.o ../build/assert.o start.o"
 DD_IN=$BIN

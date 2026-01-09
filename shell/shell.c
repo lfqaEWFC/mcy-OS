@@ -184,9 +184,13 @@ void my_shell(void)
             int32_t pid = fork();
             if (pid)
             { // 父进程
-                /* 下面这个while必须要加上,否则父进程一般情况下会比子进程先执行,
-                因此会进行下一轮循环将findl_path清空,这样子进程将无法从final_path中获得参数 */
-                while(1);
+                int32_t status;
+                int32_t child_pid = wait(&status);
+                if (child_pid == -1)
+                {
+                    panic("my_shell: no child\n");
+                }
+                printf("child_pid %d, it's status: %d\n", child_pid, status);
             }
             else
             { // 子进程
@@ -203,7 +207,6 @@ void my_shell(void)
                 {
                     execv(argv[0], argv);
                 }
-                while (1);
             }
         }
         int32_t arg_idx = 0;
