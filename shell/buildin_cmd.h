@@ -11,5 +11,6 @@ int32_t buildin_mkdir(uint32_t argc, char **argv);
 int32_t buildin_rmdir(uint32_t argc, char **argv);
 int32_t buildin_rm(uint32_t argc, char **argv);
 void make_clear_abs_path(char *path, char *final_path);
+void buildin_help(uint32_t argc, char **argv);
 
 #endif

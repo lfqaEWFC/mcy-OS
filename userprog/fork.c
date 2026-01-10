@@ -7,6 +7,7 @@
 #include "process.h"
 #include "file.h"
 #include "interrupt.h"
+#include "pipe.h"
 
 extern void intr_exit(void);
 
@@ -97,7 +98,7 @@ static int32_t build_child_stack(struct task_struct *child_thread)
     uint32_t *esi_ptr_in_thread_stack = (uint32_t *)intr_0_stack - 2;
     uint32_t *edi_ptr_in_thread_stack = (uint32_t *)intr_0_stack - 3;
     uint32_t *ebx_ptr_in_thread_stack = (uint32_t *)intr_0_stack - 4;
-    /**********************************************************/
+    /*****************************************************/
 
     /* ebp在thread_stack中的地址便是当时的esp(0级栈的栈顶),
     即esp为"(uint32_t*)intr_0_stack - 5" */
@@ -110,7 +111,7 @@ static int32_t build_child_stack(struct task_struct *child_thread)
      * 因为在进入intr_exit后一系列的pop会把寄存器中的数据覆盖 */
     *ebp_ptr_in_thread_stack = *ebx_ptr_in_thread_stack =
     *edi_ptr_in_thread_stack = *esi_ptr_in_thread_stack = 0;
-    /*********************************************************/
+    /***************************************************/
 
     /* 把构建的thread_stack的栈顶做为switch_to恢复数据时的栈顶 */
     child_thread->self_kstack = ebp_ptr_in_thread_stack;
@@ -127,7 +128,14 @@ static void update_inode_open_cnts(struct task_struct *thread)
         ASSERT(global_fd < MAX_FILE_OPEN);
         if (global_fd != -1)
         {
-            file_table[global_fd].fd_inode->i_open_cnts++;
+            if (is_pipe(local_fd))
+            {
+                file_table[global_fd].fd_pos++;
+            }
+            else
+            {
+                file_table[global_fd].fd_inode->i_open_cnts++;
+            }
         }
         local_fd++;
     }

@@ -4,6 +4,8 @@
 #include "thread.h"
 #include "fs.h"
 #include "debug.h"
+#include "pipe.h"
+#include "file.h"
 
 /* 释放用户进程资源:
  * 1 页表中对应的物理页
@@ -62,7 +64,19 @@ static void release_prog_resource(struct task_struct *release_thread)
     {
         if (release_thread->fd_table[fd_idx] != -1)
         {
-            sys_close(fd_idx);
+            if (is_pipe(fd_idx))
+            {
+                uint32_t global_fd = fd_local2global(fd_idx);
+                if (--file_table[global_fd].fd_pos == 0)
+                {
+                    mfree_page(PF_KERNEL, file_table[global_fd].fd_inode, 1);
+                    file_table[global_fd].fd_inode = NULL;
+                }
+            }
+            else
+            {
+                sys_close(fd_idx);
+            }
         }
         fd_idx++;
     }

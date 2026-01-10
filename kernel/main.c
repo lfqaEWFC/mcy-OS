@@ -13,7 +13,8 @@ int main(void) {
     put_str("I am kernel\n");
     init_all();
     intr_enable(); // 开中断
-    uint32_t file_size = 5609; // cat.c的文件大小
+
+    uint32_t file_size = 5855;
     uint32_t sec_cnt = DIV_ROUND_UP(file_size, 512);
     struct disk *sda = &channels[0].devices[0];
     void *prog_buf = sys_malloc(file_size);
@@ -27,6 +28,7 @@ int main(void) {
             while (1);
         }
     }
+
     cls_screen();
     console_put_str("[rabbit@localhost /]$ ");
     thread_exit(running_thread(), true);
