@@ -5,6 +5,7 @@
 #include "fs.h"
 #include "string.h"
 #include "thread.h"
+#include "syscall.h"
 
 typedef uint32_t Elf32_Word, Elf32_Addr, Elf32_Off;
 typedef uint16_t Elf32_Half;
@@ -107,12 +108,15 @@ static int32_t load(const char *pathname)
     int32_t fd = sys_open(pathname, O_RDONLY);
     if (fd == -1)
     {
+        exit(-1);
         return -1;
     }
 
     if (sys_read(fd, &elf_header, sizeof(struct Elf32_Ehdr)) != sizeof(struct Elf32_Ehdr))
     {
         ret = -1;
+        printf("this is not an ELF file\n");
+        exit(ret);
         goto done;
     }
 
@@ -120,6 +124,8 @@ static int32_t load(const char *pathname)
     if (memcmp(elf_header.e_ident, "\177ELF\1\1\1", 7) || elf_header.e_type != 2 || elf_header.e_machine != 3 || elf_header.e_version != 1 || elf_header.e_phnum > 1024 || elf_header.e_phentsize != sizeof(struct Elf32_Phdr))
     {
         ret = -1;
+        printf("this is not an ELF file\n");
+        exit(ret);
         goto done;
     }
 
@@ -139,6 +145,8 @@ static int32_t load(const char *pathname)
         if (sys_read(fd, &prog_header, prog_header_size) != prog_header_size)
         {
             ret = -1;
+            printf("this is not an ELF file\n");
+            exit(ret);
             goto done;
         }
 
@@ -148,6 +156,8 @@ static int32_t load(const char *pathname)
             if (!segment_load(fd, prog_header.p_offset, prog_header.p_filesz, prog_header.p_vaddr))
             {
                 ret = -1;
+                printf("this is not an ELF file\n");
+                exit(ret);
                 goto done;
             }
         }

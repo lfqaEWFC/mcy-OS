@@ -1106,15 +1106,16 @@ void sys_help(void)
 {
     printk("\
  buildin commands:\n\
-       ls: show directory or file information\n\
-       cd: change current work directory\n\
-       mkdir: create a directory\n\
-       rmdir: remove a empty directory\n\
-       rm: remove a regular file\n\
-       pwd: show current work directory\n\
-       ps: show process information\n\
-       clear: clear screen\n\
+    ls: show directory or file information\n\
+    cd: change current work directory\n\
+    mkdir: create a directory\n\
+    rmdir: remove a empty directory\n\
+    rm: remove a regular file\n\
+    pwd: show current work directory\n\
+    ps: show process information\n\
+    clear: clear screen\n\
+    cat: read from stdin or file and write to stdout\n\
  shortcut key:\n\
-       ctrl+l: clear screen\n\
-       ctrl+u: clear input\n\n");
+    ctrl+l: clear screen\n\
+    ctrl+u: clear input\n");
 }
