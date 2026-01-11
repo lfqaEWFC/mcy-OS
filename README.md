@@ -54,7 +54,7 @@ bash -x compile.sh
 
 ## 常见操作
 
-- 编译：`make`
+- 编译：`make all`
 - 清理构建产物：`make clean`
 
 ## 贡献
