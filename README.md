@@ -56,7 +56,6 @@ bash -x compile.sh
 
 - 编译：`make`
 - 清理构建产物：`make clean`
-- 运行（示例）：`make run` 或使用 `qemu-system-*` 手动运行生成镜像
 
 ## 贡献
 
