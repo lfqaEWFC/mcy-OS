@@ -231,9 +231,6 @@ void my_shell(void)
         char *pipe_symbol = strchr(cmd_line, '|');
         if (pipe_symbol)
         {
-            /* 支持多重管道操作,如cmd1|cmd2|..|cmdn,
-             * cmd1的标准输出和cmdn的标准输入需要单独处理 */
-
             /*1 生成管道*/
             int32_t fd[2] = {-1}; // fd[0]用于输入,fd[1]用于输出
             pipe(fd);

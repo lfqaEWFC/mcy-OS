@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
     if (argc > 2)
     {
-        printf("cat: only support 1 argument.\neg: cat filename\n");
+        printf("cat: only support 1 argument or pipe!\neg: cat filename\n");
         exit(-2);
     }
 

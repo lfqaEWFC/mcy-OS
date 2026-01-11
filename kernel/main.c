@@ -14,7 +14,7 @@ int main(void) {
     init_all();
     intr_enable(); // 开中断
 
-    uint32_t file_size = 5855;
+    uint32_t file_size = 5863;
     uint32_t sec_cnt = DIV_ROUND_UP(file_size, 512);
     struct disk *sda = &channels[0].devices[0];
     void *prog_buf = sys_malloc(file_size);
