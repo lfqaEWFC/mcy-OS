@@ -42,7 +42,7 @@ bash -x compile.sh
 最后在您安装的 bochs 目录下运行
 
 运行操作详见：
-[csdn_link](https://blog.csdn.net/kanshanxd/article/details/130689471?spm=1001.2014.3001.5506)
+[csdn_link](https://blog.csdn.net/kanshanxd/category_12322348.html)
 
 注：上述命令根据本仓库的 Makefile 与生成的镜像名可能不同，请以仓库实际 Makefile 为准。
 
