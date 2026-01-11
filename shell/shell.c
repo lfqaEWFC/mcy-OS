@@ -126,6 +126,11 @@ static int32_t cmd_parse(char *cmd_str, char **argv, char token)
 /* 执行命令 */
 static void cmd_execute(uint32_t argc, char **argv)
 {
+    if (argv[0] == 0)
+    {
+        printf("empty command\n");
+        return;
+    }
     if (!strcmp("ls", argv[0]))
     {
         buildin_ls(argc, argv);
@@ -206,7 +211,6 @@ static void cmd_execute(uint32_t argc, char **argv)
     }
 }
 
-
 /* 简单的shell */
 void my_shell(void)
 {
@@ -219,6 +223,7 @@ void my_shell(void)
         readline(cmd_line, cmd_len);
         if (cmd_line[0] == 0)
         {
+            printf("empty command\n");
             continue;
         }
 
