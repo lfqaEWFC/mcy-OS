@@ -11,6 +11,7 @@
 #define cmd_len 128 // 最大支持键入128个字符的命令行输入
 
 static char cmd_line[cmd_len] = {0};
+bool pipe_flag = false;
 char cwd_cache[64] = {0};
 char *argv[MAX_ARG_NR]; // argv必须为全局变量，为了以后exec的程序可访问参数
 char final_path[MAX_PATH_LEN] = {0}; // 用于洗路径时的缓冲
@@ -171,6 +172,10 @@ static void cmd_execute(uint32_t argc, char **argv)
     {
         buildin_help(argc, argv);
     }
+    else if (!strcmp("cat", argv[0]) && !pipe_flag && argc == 1)
+    {
+        printf("cat: only support 1 argument or pipe!\n");
+    }
     else
     { // 如果是外部命令,需要从磁盘上加载
         int32_t pid = fork();
@@ -231,6 +236,8 @@ void my_shell(void)
         char *pipe_symbol = strchr(cmd_line, '|');
         if (pipe_symbol)
         {
+            pipe_flag = true;
+
             /*1 生成管道*/
             int32_t fd[2] = {-1}; // fd[0]用于输入,fd[1]用于输出
             pipe(fd);
@@ -245,7 +252,14 @@ void my_shell(void)
             /* 执行第一个命令,命令的输出会写入环形缓冲区 */
             argc = -1;
             argc = cmd_parse(each_cmd, argv, ' ');
-            cmd_execute(argc, argv);
+            if(!strcmp("cat", argv[0]) && pipe_flag && argc == 1)
+            {
+                printf("cat: only support 1 argument or pipe!\n");
+            }
+            else
+            {
+                cmd_execute(argc, argv);
+            }
 
             /* 跨过'|',处理下一个命令 */
             each_cmd = pipe_symbol + 1;
@@ -277,6 +291,8 @@ void my_shell(void)
             /*6 关闭管道 */
             close(fd[0]);
             close(fd[1]);
+
+            pipe_flag = false;
         }
         else
         {
